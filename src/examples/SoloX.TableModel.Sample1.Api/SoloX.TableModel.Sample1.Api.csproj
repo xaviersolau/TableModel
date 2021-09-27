@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\libs\SoloX.TableModel.Server\SoloX.TableModel.Server.csproj" />
+    <ProjectReference Include="..\..\libs\SoloX.TableModel\SoloX.TableModel.csproj" />
+  </ItemGroup>
+
+</Project>

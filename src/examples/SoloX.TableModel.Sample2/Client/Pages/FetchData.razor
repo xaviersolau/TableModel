@@ -1,0 +1,75 @@
+﻿@page "/fetchdata"
+@using SoloX.TableModel.Sample2.Shared
+@using SoloX.TableModel.Impl
+
+@inject ITableDataRepository TableDataRepository
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+
+    <EditForm Model="@this" OnValidSubmit="@HandleValidSubmit">
+
+        <InputText id="name" @bind-Value="name" />
+
+        <button type="submit">Submit</button>
+    </EditForm>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<WeatherForecast> forecasts;
+    private string name;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        var data = await TableDataRepository.GetTableDataAsync<WeatherForecast>("WeatherForecast");
+
+        var tableFilter = new TableFilter<WeatherForecast>();
+
+        if (!string.IsNullOrEmpty(this.name))
+        {
+            tableFilter.Register(nameof(WeatherForecast.Summary), wf => wf.Summary, v => v.Contains(this.name));
+        }
+
+        forecasts = await data.GetDataAsync(tableFilter);
+    }
+}
