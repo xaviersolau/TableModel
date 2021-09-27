@@ -10,6 +10,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{E4FDDEB3-E9DE-421C-A14C-3D132082D3A4}"
 	ProjectSection(SolutionItems) = preProject
 		doc\client_server.md = doc\client_server.md
+		coverlet.runsettings = coverlet.runsettings
+		LICENSE = LICENSE
+		README.md = README.md
+		src\SharedProperties.props = src\SharedProperties.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoloX.TableModel.Sample1.Api", "src\examples\SoloX.TableModel.Sample1.Api\SoloX.TableModel.Sample1.Api.csproj", "{2EF017CD-ECFD-4179-9888-A77BA8EBC767}"

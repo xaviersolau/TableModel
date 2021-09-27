@@ -157,7 +157,6 @@ namespace SoloX.TableModel.UTests
                 Assert.NotNull(tableData);
                 Assert.IsType<FamilyMemberTableData>(tableData);
             });
-            
         }
 
         private async Task SetupDbContextAndRunTestAsync(Func<FamilyDbContext, Task> testHandler)
