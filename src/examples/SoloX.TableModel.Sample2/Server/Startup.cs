@@ -40,7 +40,7 @@ namespace SoloX.TableModel.Sample2.Server
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SoloX.TableModel.Sample2.Server", Version = "v1" });
             });
 
-            services.AddTableStructure(
+            services.AddTableModel(
                 builder =>
                 {
                     builder.UseMemoryTableData<WeatherForecast>(

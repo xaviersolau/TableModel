@@ -1,9 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// ----------------------------------------------------------------------
+// <copyright file="Person.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
+using System;
 
 namespace SoloX.TableModel.UTests.Samples
 {
@@ -22,7 +25,7 @@ namespace SoloX.TableModel.UTests.Samples
 
         public static Person[] GetSomePersons()
         {
-            return new []
+            return new Person[]
             {
                 new Person()
                 {
@@ -69,7 +72,9 @@ namespace SoloX.TableModel.UTests.Samples
             };
         }
 
+#pragma warning disable CA1024 // Utiliser des propriétés quand cela est approprié
         public static Person GetJohnDoe()
+#pragma warning restore CA1024 // Utiliser des propriétés quand cela est approprié
         {
             return new Person()
             {

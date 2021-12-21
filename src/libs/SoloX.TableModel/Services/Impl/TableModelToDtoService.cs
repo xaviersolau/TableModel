@@ -1,23 +1,43 @@
-﻿using SoloX.TableModel.Dto;
+﻿// ----------------------------------------------------------------------
+// <copyright file="TableModelToDtoService.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
+using SoloX.TableModel.Dto;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SoloX.TableModel.Services.Impl
 {
+    /// <summary>
+    /// Table model to Dto service.
+    /// </summary>
     public class TableModelToDtoService : ITableModelToDtoService
     {
+        /// <inheritdoc/>
         public ColumnDto Map<TData>(IColumn<TData> column)
         {
+            if (column == null)
+            {
+                throw new ArgumentNullException(nameof(column));
+            }
+
             var visitor = new Visitor<TData>();
 
             return column.Accept(visitor);
         }
 
+        /// <inheritdoc/>
         public ColumnDto Map<TData, TColumn>(IColumn<TData, TColumn> column)
         {
+            if (column == null)
+            {
+                throw new ArgumentNullException(nameof(column));
+            }
+
             return new ColumnDto()
             {
                 Id = column.Id,
@@ -28,8 +48,14 @@ namespace SoloX.TableModel.Services.Impl
             };
         }
 
+        /// <inheritdoc/>
         public TableStructureDto Map<TData, TId>(ITableStructure<TData, TId> tableStructure)
         {
+            if (tableStructure == null)
+            {
+                throw new ArgumentNullException(nameof(tableStructure));
+            }
+
             var visitor = new Visitor<TData>();
 
             return new TableStructureDto()
@@ -44,15 +70,27 @@ namespace SoloX.TableModel.Services.Impl
             };
         }
 
+        /// <inheritdoc/>
         public ColumnDecoratorDto Map<TData, TDecorator>(IColumnDecorator<TData, TDecorator> columnDecorator)
         {
+            if (columnDecorator == null)
+            {
+                throw new ArgumentNullException(nameof(columnDecorator));
+            }
+
             var visitor = new DecoratorVisitor<TData, TDecorator>();
 
             return columnDecorator.Accept(visitor);
         }
 
+        /// <inheritdoc/>
         public ColumnDecoratorDto Map<TData, TDecorator, TColumn>(IColumnDecorator<TData, TDecorator, TColumn> columnDecorator)
         {
+            if (columnDecorator == null)
+            {
+                throw new ArgumentNullException(nameof(columnDecorator));
+            }
+
             return new ColumnDecoratorDto()
             {
                 DecoratorExpression = columnDecorator.RelativeDecoratorExpression.ToString(),
@@ -60,8 +98,14 @@ namespace SoloX.TableModel.Services.Impl
             };
         }
 
+        /// <inheritdoc/>
         public TableDecoratorDto Map<TData, TDecorator>(ITableDecorator<TData, TDecorator> tableDecorator)
         {
+            if (tableDecorator == null)
+            {
+                throw new ArgumentNullException(nameof(tableDecorator));
+            }
+
             var visitor = new DecoratorVisitor<TData, TDecorator>();
 
             return new TableDecoratorDto()

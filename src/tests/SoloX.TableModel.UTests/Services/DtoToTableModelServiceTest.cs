@@ -1,18 +1,23 @@
-﻿using FluentAssertions;
+﻿// ----------------------------------------------------------------------
+// <copyright file="DtoToTableModelServiceTest.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
+using FluentAssertions;
 using SoloX.TableModel.Dto;
 using SoloX.TableModel.Services.Impl;
 using SoloX.TableModel.UTests.Samples;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Moq;
 using Xunit;
 
 namespace SoloX.TableModel.UTests.Services
 {
+#pragma warning disable CA1304 // Spécifier CultureInfo
     public class DtoToTableModelServiceTest
     {
         [Fact]
@@ -124,7 +129,7 @@ namespace SoloX.TableModel.UTests.Services
                 Id = "SomeDecoratorId",
                 DecoratorType = typeof(string).AssemblyQualifiedName,
                 DefaultDecoratorExpression = relativeDefaultExpression.ToString(),
-                DecoratorColumns = new []
+                DecoratorColumns = new ColumnDecoratorDto[]
                 {
                     new ColumnDecoratorDto()
                     {
@@ -158,4 +163,5 @@ namespace SoloX.TableModel.UTests.Services
                 .Should().Be(persone.LastName.ToLower());
         }
     }
+#pragma warning restore CA1304 // Spécifier CultureInfo
 }

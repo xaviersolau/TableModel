@@ -1,10 +1,15 @@
-﻿using FluentAssertions;
+﻿// ----------------------------------------------------------------------
+// <copyright file="TableSortingTest.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
+using FluentAssertions;
 using SoloX.TableModel.Impl;
 using SoloX.TableModel.UTests.Samples;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 

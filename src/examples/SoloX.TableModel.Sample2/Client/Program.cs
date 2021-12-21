@@ -21,7 +21,7 @@ namespace SoloX.TableModel.Sample2.Client
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 
-            builder.Services.AddTableStructure(
+            builder.Services.AddTableModel(
                 tableBuilder =>
                 {
                     tableBuilder.UseRemoteTableData<WeatherForecast>(

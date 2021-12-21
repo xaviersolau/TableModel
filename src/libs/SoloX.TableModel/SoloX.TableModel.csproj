@@ -9,6 +9,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
+    <PackageReference Include="SoloX.CodeQuality.Prod" Version="2.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="SoloX.ExpressionTools.Parser" Version="1.0.0" />
     <PackageReference Include="SoloX.ExpressionTools.Transform" Version="1.0.0" />
   </ItemGroup>

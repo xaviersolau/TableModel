@@ -1,113 +1,139 @@
-﻿using SoloX.TableModel.Dto;
+﻿// ----------------------------------------------------------------------
+// <copyright file="RemoteTableData.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
+using SoloX.TableModel.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SoloX.TableModel.Impl
 {
+    /// <summary>
+    /// HTTP remote table data provider.
+    /// </summary>
+    /// <typeparam name="TData">Table data type.</typeparam>
     public class RemoteTableData<TData> : ATableData<TData>
     {
         private readonly HttpClient httpClient;
 
+        /// <summary>
+        /// Setup a RemoteTableData with the given HttpClient.
+        /// </summary>
+        /// <param name="id">Table data Id.</param>
+        /// <param name="httpClient">HttpClient to use to get the remote data from.</param>
         public RemoteTableData(string id, HttpClient httpClient)
             : base(id)
         {
-            this.httpClient = httpClient;
+            this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
+        ///<inheritdoc/>
         public override Task<IEnumerable<TData>> GetDataPageAsync(int offset, int pageSize)
         {
             var request = MakeDataRequestDto(null, null, offset, pageSize);
 
-            return SendDataRequest(request);
+            return SendDataRequestAsync(request);
         }
 
+        ///<inheritdoc/>
         public override Task<IEnumerable<TData>> GetDataAsync()
         {
             var request = MakeDataRequestDto(null, null, null, null);
 
-            return SendDataRequest(request);
+            return SendDataRequestAsync(request);
         }
 
+        ///<inheritdoc/>
         public override Task<IEnumerable<TData>> GetDataPageAsync(ITableSorting<TData> sorting, ITableFilter<TData> filter, int offset, int pageSize)
         {
             var request = MakeDataRequestDto(sorting, filter, offset, pageSize);
 
-            return SendDataRequest(request);
+            return SendDataRequestAsync(request);
         }
 
+        ///<inheritdoc/>
         public override Task<IEnumerable<TData>> GetDataAsync(ITableSorting<TData> sorting, ITableFilter<TData> filter)
         {
             var request = MakeDataRequestDto(sorting, filter, null, null);
 
-            return SendDataRequest(request);
+            return SendDataRequestAsync(request);
         }
 
+        ///<inheritdoc/>
         public override Task<IEnumerable<TData>> GetDataPageAsync(ITableFilter<TData> filter, int offset, int pageSize)
         {
             var request = MakeDataRequestDto(null, filter, offset, pageSize);
 
-            return SendDataRequest(request);
+            return SendDataRequestAsync(request);
         }
 
+        ///<inheritdoc/>
         public override Task<IEnumerable<TData>> GetDataAsync(ITableFilter<TData> filter)
         {
             var request = MakeDataRequestDto(null, filter, null, null);
 
-            return SendDataRequest(request);
+            return SendDataRequestAsync(request);
         }
 
+        ///<inheritdoc/>
         public override Task<IEnumerable<TData>> GetDataPageAsync(ITableSorting<TData> sorting, int offset, int pageSize)
         {
             var request = MakeDataRequestDto(sorting, null, offset, pageSize);
 
-            return SendDataRequest(request);
+            return SendDataRequestAsync(request);
         }
 
+        ///<inheritdoc/>
         public override Task<IEnumerable<TData>> GetDataAsync(ITableSorting<TData> sorting)
         {
             var request = MakeDataRequestDto(sorting, null, null, null);
 
-            return SendDataRequest(request);
+            return SendDataRequestAsync(request);
         }
 
+        ///<inheritdoc/>
         public override Task<int> GetDataCountAsync()
         {
             var request = MakeDataCountRequestDto(null);
 
-            return SendDataCountRequest(request);
+            return SendDataCountRequestAsync(request);
         }
 
+        ///<inheritdoc/>
         public override Task<int> GetDataCountAsync(ITableFilter<TData> filter)
         {
             var request = MakeDataCountRequestDto(filter);
 
-            return SendDataCountRequest(request);
+            return SendDataCountRequestAsync(request);
         }
 
-        private async Task<IEnumerable<TData>> SendDataRequest(DataRequestDto request)
+        private async Task<IEnumerable<TData>> SendDataRequestAsync(DataRequestDto request)
         {
-            var response = await this.httpClient.PostAsJsonAsync(Id, request);
+            var response = await this.httpClient.PostAsJsonAsync(Id, request).ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadFromJsonAsync<IEnumerable<TData>>();
+            return await response.Content.ReadFromJsonAsync<IEnumerable<TData>>().ConfigureAwait(false);
         }
 
-        private async Task<int> SendDataCountRequest(DataCountRequestDto request)
+        private async Task<int> SendDataCountRequestAsync(DataCountRequestDto request)
         {
-            var response = await this.httpClient.PostAsJsonAsync($"{Id}/Count", request);
+            var response = await this.httpClient.PostAsJsonAsync($"{Id}/Count", request).ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadFromJsonAsync<int>();
+            return await response.Content.ReadFromJsonAsync<int>().ConfigureAwait(false);
         }
 
-        private static DataRequestDto MakeDataRequestDto(ITableSorting<TData> sorting, ITableFilter<TData> filter, int? offset, int? pageSize)
+        private static DataRequestDto MakeDataRequestDto(ITableSorting<TData>? sorting, ITableFilter<TData>? filter, int? offset, int? pageSize)
         {
             var filterVisitor = new FilterVisitor();
             var columnVisitor = new ColumnVisitor();

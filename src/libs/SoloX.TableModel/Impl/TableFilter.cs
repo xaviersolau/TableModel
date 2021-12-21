@@ -1,25 +1,36 @@
-﻿using SoloX.ExpressionTools.Transform.Impl;
+﻿// ----------------------------------------------------------------------
+// <copyright file="TableFilter.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
 using SoloX.ExpressionTools.Transform.Impl.Resolver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SoloX.TableModel.Impl
 {
+    /// <summary>
+    /// Table filter descriptor.
+    /// </summary>
+    /// <typeparam name="TData">Table data type.</typeparam>
     public class TableFilter<TData> : ITableFilter<TData>
     {
-        private List<IColumnFilter<TData>> columnFilters = new List<IColumnFilter<TData>>();
+        private readonly List<IColumnFilter<TData>> columnFilters = new List<IColumnFilter<TData>>();
 
+        ///<inheritdoc/>
         public IEnumerable<IColumnFilter<TData>> ColumnFilters => this.columnFilters;
 
+        ///<inheritdoc/>
         public IQueryable<TData> Apply(IQueryable<TData> data)
         {
             var dataIter = data;
 
-            foreach (var columnFilter in columnFilters)
+            foreach (var columnFilter in this.columnFilters)
             {
                 dataIter = columnFilter.Apply(dataIter);
             }
@@ -27,6 +38,7 @@ namespace SoloX.TableModel.Impl
             return dataIter;
         }
 
+        ///<inheritdoc/>
         public void Register<TColumn>(Expression<Func<TData, TColumn>> data, Expression<Func<TColumn, bool>> filter)
         {
             if (data == null)
@@ -41,6 +53,7 @@ namespace SoloX.TableModel.Impl
             Register(id, data, filter);
         }
 
+        ///<inheritdoc/>
         public void Register<TColumn>(string columnId, Expression<Func<TData, TColumn>> data, Expression<Func<TColumn, bool>> filter)
         {
             if (data == null)
@@ -48,11 +61,17 @@ namespace SoloX.TableModel.Impl
                 throw new ArgumentNullException(nameof(data));
             }
 
-            Register(new Column<TData,TColumn>(columnId, data), filter);
+            Register(new Column<TData, TColumn>(columnId, data), filter);
         }
 
+        ///<inheritdoc/>
         public void Register<TColumn>(IColumn<TData> column, Expression<Func<TColumn, bool>> filter)
         {
+            if (column == null)
+            {
+                throw new ArgumentNullException(nameof(column));
+            }
+
             if (column is IColumn<TData, TColumn> typedColumn)
             {
                 Register(typedColumn, filter);
@@ -63,16 +82,19 @@ namespace SoloX.TableModel.Impl
             }
         }
 
+        ///<inheritdoc/>
         public void Register<TColumn>(IColumn<TData, TColumn> column, Expression<Func<TColumn, bool>> filter)
         {
             this.columnFilters.Add(new ColumnFilter<TData, TColumn>(column, filter));
         }
 
+        ///<inheritdoc/>
         public void UnRegister(IColumn<TData> column)
         {
             throw new NotImplementedException();
         }
 
+        ///<inheritdoc/>
         public void UnRegister(string columnId)
         {
             throw new NotImplementedException();

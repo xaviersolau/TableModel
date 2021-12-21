@@ -1,5 +1,12 @@
-﻿using SoloX.TableModel.Impl;
-using SoloX.TableModel.Options;
+﻿// ----------------------------------------------------------------------
+// <copyright file="LocalTableStructureOptions.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
+using SoloX.TableModel.Impl;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,18 +15,35 @@ using System.Threading.Tasks;
 
 namespace SoloX.TableModel.Options.Impl
 {
+    /// <summary>
+    /// Local table structure options.
+    /// </summary>
+    /// <typeparam name="TData">Table data type.</typeparam>
+    /// <typeparam name="TId">Table Id type.</typeparam>
     public class LocalTableStructureOptions<TData, TId> : ATableStructureOptions, ILocalTableStructureOptions<TData, TId>, ILocalTableStructureDataOptions<TData, TId>
     {
-        private List<IColumn<TData>> dataColumns = new List<IColumn<TData>>();
+        private readonly List<IColumn<TData>> dataColumns = new List<IColumn<TData>>();
 
+        /// <summary>
+        /// Get Column Id.
+        /// </summary>
         public IColumn<TData, TId> IdColumn { get; private set; }
 
-        public IEnumerable<IColumn<TData>> DataColumns => dataColumns;
+        /// <summary>
+        /// Get table data columns.
+        /// </summary>
+        public IEnumerable<IColumn<TData>> DataColumns => this.dataColumns;
 
-        public LocalTableStructureOptions(string tableStructureId, List<ATableDecoratorOptions> tableDecoratorOptions)
+        /// <summary>
+        /// Setup LocalTableStructureOptions instance with Id and decorator options.
+        /// </summary>
+        /// <param name="tableStructureId">Table structure Id.</param>
+        /// <param name="tableDecoratorOptions">Decorator options.</param>
+        public LocalTableStructureOptions(string tableStructureId, IEnumerable<ATableDecoratorOptions> tableDecoratorOptions)
             : base(tableStructureId, tableDecoratorOptions)
         { }
 
+        /// <inheritdoc/>
         public ILocalTableStructureDataOptions<TData, TId> AddIdColumn(string columnId, Expression<Func<TData, TId>> idGetterExpression, bool canSort, bool canFilter)
         {
             if (IdColumn != null)
@@ -32,6 +56,7 @@ namespace SoloX.TableModel.Options.Impl
             return this;
         }
 
+        /// <inheritdoc/>
         public ILocalTableStructureDataOptions<TData, TId> AddColumn<TColumn>(string columnId, Expression<Func<TData, TColumn>> dataGetterExpression, bool canSort, bool canFilter)
         {
             this.dataColumns.Add(new Column<TData, TColumn>(columnId, dataGetterExpression, canSort, canFilter));
@@ -39,6 +64,7 @@ namespace SoloX.TableModel.Options.Impl
             return this;
         }
 
+        /// <inheritdoc/>
         public override Task<ITableStructure> CreateModelInstanceAsync(IServiceProvider serviceProvider)
         {
             var tableStructure = new TableStructure<TData, TId>(TableStructureId, IdColumn, DataColumns);

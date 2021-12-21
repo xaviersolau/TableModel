@@ -1,13 +1,19 @@
-﻿using SoloX.TableModel.Impl;
+﻿// ----------------------------------------------------------------------
+// <copyright file="PersonEx.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
+using SoloX.TableModel.Impl;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SoloX.TableModel.UTests.Samples
 {
+#pragma warning disable CA1711 // Les identificateurs ne doivent pas avoir un suffixe incorrect
+#pragma warning disable CA1024 // Utiliser des propriétés quand cela est approprié
     public static class PersonEx
     {
         public static ITableStructure<Person, int> GetTableStructure()
@@ -27,10 +33,12 @@ namespace SoloX.TableModel.UTests.Samples
             var decorator = new TableDecorator<Person, string>("TableDecoratorId", tableStructure);
 
             decorator.RegisterDefault(v => v.ToString());
-            decorator.Register<string>(nameof(Person.LastName), n => n.ToUpper());
+            decorator.Register<string>(nameof(Person.LastName), n => n.ToUpper(CultureInfo.InvariantCulture));
             decorator.Register<DateTime>(nameof(Person.BirthDate), date => date.ToString("D", CultureInfo.InvariantCulture));
 
             return decorator;
         }
     }
+#pragma warning restore CA1024 // Utiliser des propriétés quand cela est approprié
+#pragma warning restore CA1711 // Les identificateurs ne doivent pas avoir un suffixe incorrect
 }

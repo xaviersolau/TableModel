@@ -1,3 +1,11 @@
+// ----------------------------------------------------------------------
+// <copyright file="TableModelControllerTest.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -35,7 +43,7 @@ namespace SoloX.TableModel.Server.UTests
 
             var request = new DataRequestDto()
             {
-                Filters = new []
+                Filters = new FilterDto[]
                 {
                     new FilterDto()
                     {
@@ -63,7 +71,7 @@ namespace SoloX.TableModel.Server.UTests
             var result = data.Should().BeOfType<OkObjectResult>()
                 .Which.Value.Should().BeAssignableTo<IEnumerable<Person>>().Which;
 
-            result.Should().BeEquivalentTo(Person.GetSomePersons().Where(p => p.FirstName.Contains("J")));
+            result.Should().BeEquivalentTo(Person.GetSomePersons().Where(p => p.FirstName.Contains("J", StringComparison.InvariantCulture)));
         }
     }
 }
