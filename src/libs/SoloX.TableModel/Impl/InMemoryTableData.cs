@@ -1,97 +1,40 @@
-﻿using System;
+﻿// ----------------------------------------------------------------------
+// <copyright file="InMemoryTableData.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SoloX.TableModel.Impl
 {
-    public class InMemoryTableData<TData> : ATableData<TData>
+    /// <summary>
+    /// In memory table data provider.
+    /// </summary>
+    /// <typeparam name="TData">Table data type.</typeparam>
+    public class InMemoryTableData<TData> : AQueryableTableData<TData>
     {
-        private IEnumerable<TData> data;
+        private readonly IEnumerable<TData> data;
 
+        /// <summary>
+        /// Setup a InMemoryTableData with the given data.
+        /// </summary>
+        /// <param name="id">Table data Id.</param>
+        /// <param name="data">In memory data to provide.</param>
         public InMemoryTableData(string id, IEnumerable<TData> data)
             : base(id)
         {
-            this.data = data;
+            this.data = data ?? throw new ArgumentNullException(nameof(data));
         }
 
-        public override Task<IEnumerable<TData>> GetDataAsync()
+        ///<inheritdoc/>
+        protected override IQueryable<TData> QueryData()
         {
-            return Task.FromResult(data);
-        }
-
-        public override Task<IEnumerable<TData>> GetDataAsync(ITableSorting<TData> sorting, ITableFilter<TData> filter)
-        {
-            var processedData = data.AsQueryable();
-
-            processedData = filter.Apply(processedData);
-
-            processedData = sorting.Apply(processedData);
-
-            return Task.FromResult<IEnumerable<TData>>(processedData);
-        }
-
-        public override Task<IEnumerable<TData>> GetDataAsync(ITableFilter<TData> filter)
-        {
-            var processedData = data.AsQueryable();
-
-            return Task.FromResult<IEnumerable<TData>>(filter.Apply(processedData));
-        }
-
-        public override Task<IEnumerable<TData>> GetDataAsync(ITableSorting<TData> sorting)
-        {
-            var processedData = data.AsQueryable();
-
-            return Task.FromResult<IEnumerable<TData>>(sorting.Apply(processedData));
-        }
-
-        public override Task<IEnumerable<TData>> GetDataPageAsync(int offset, int pageSize)
-        {
-            return Task.FromResult(data.Skip(offset).Take(pageSize));
-        }
-
-        public override Task<IEnumerable<TData>> GetDataPageAsync(ITableSorting<TData> sorting, ITableFilter<TData> filter, int offset, int pageSize)
-        {
-            var processedData = data.AsQueryable();
-
-            processedData = filter.Apply(processedData);
-
-            processedData = sorting.Apply(processedData);
-
-            return Task.FromResult<IEnumerable<TData>>(processedData.Skip(offset).Take(pageSize));
-        }
-
-        public override Task<IEnumerable<TData>> GetDataPageAsync(ITableFilter<TData> filter, int offset, int pageSize)
-        {
-            var processedData = data.AsQueryable();
-
-            processedData = filter.Apply(processedData);
-
-            return Task.FromResult<IEnumerable<TData>>(processedData.Skip(offset).Take(pageSize));
-        }
-
-        public override Task<IEnumerable<TData>> GetDataPageAsync(ITableSorting<TData> sorting, int offset, int pageSize)
-        {
-            var processedData = data.AsQueryable();
-
-            processedData = sorting.Apply(processedData);
-
-            return Task.FromResult<IEnumerable<TData>>(processedData.Skip(offset).Take(pageSize));
-        }
-
-        public override Task<int> GetDataCountAsync()
-        {
-            return Task.FromResult(data.Count());
-        }
-
-        public override Task<int> GetDataCountAsync(ITableFilter<TData> filter)
-        {
-            var processedData = data.AsQueryable();
-
-            processedData = filter.Apply(processedData);
-
-            return Task.FromResult(processedData.Count());
+            return this.data.AsQueryable();
         }
     }
 }

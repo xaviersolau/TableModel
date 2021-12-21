@@ -1,16 +1,20 @@
-﻿using FluentAssertions;
+﻿// ----------------------------------------------------------------------
+// <copyright file="RemoteTableDataTest.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
+using FluentAssertions;
 using Moq;
 using SoloX.CodeQuality.Test.Helpers.Http;
 using SoloX.TableModel.Dto;
 using SoloX.TableModel.Impl;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -79,7 +83,8 @@ namespace SoloX.TableModel.UTests
                     {
                         request.Should().NotBeNull();
 
-                        request.Should().BeEquivalentTo(new DataRequestDto() {
+                        request.Should().BeEquivalentTo(new DataRequestDto()
+                        {
                             PageSize = 2,
                             Offset = 1,
                         });
@@ -210,7 +215,7 @@ namespace SoloX.TableModel.UTests
                             },
                         });
 
-                        return data.Where(d => d.Contains("data3"));
+                        return data.Where(d => d.Contains("data3", StringComparison.Ordinal));
                     })
                 .Build();
 

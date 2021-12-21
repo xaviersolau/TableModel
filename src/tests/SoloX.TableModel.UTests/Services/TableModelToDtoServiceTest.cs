@@ -1,15 +1,21 @@
-﻿using FluentAssertions;
+﻿// ----------------------------------------------------------------------
+// <copyright file="TableModelToDtoServiceTest.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
+using FluentAssertions;
 using SoloX.TableModel.Impl;
 using SoloX.TableModel.Services.Impl;
 using SoloX.TableModel.UTests.Samples;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Moq;
 using Xunit;
 using System.Linq.Expressions;
+using System.Globalization;
 
 namespace SoloX.TableModel.UTests.Services
 {
@@ -58,7 +64,7 @@ namespace SoloX.TableModel.UTests.Services
             columnMock.SetupGet(x => x.Id).Returns(nameof(Person.FirstName));
             columnMock.SetupGet(x => x.DataGetterExpression).Returns(dataExpression);
 
-            var columnDecorator = new ColumnDecorator<Person, string, string>(columnMock.Object, p => p.ToUpper());
+            var columnDecorator = new ColumnDecorator<Person, string, string>(columnMock.Object, p => p.ToUpper(CultureInfo.InvariantCulture));
 
             var service = new TableModelToDtoService();
 

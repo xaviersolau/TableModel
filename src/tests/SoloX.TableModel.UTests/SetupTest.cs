@@ -1,16 +1,16 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using SoloX.TableModel;
+﻿// ----------------------------------------------------------------------
+// <copyright file="SetupTest.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
+using Microsoft.Extensions.DependencyInjection;
 using SoloX.TableModel.UTests.Samples;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Xunit;
 using SoloX.CodeQuality.Test.Helpers.Http;
 using SoloX.TableModel.Dto;
@@ -25,7 +25,7 @@ namespace SoloX.TableModel.UTests
 
             var services = new ServiceCollection();
 
-            services.AddTableStructure(
+            services.AddTableModel(
                 builder =>
                 {
                     builder
@@ -46,7 +46,7 @@ namespace SoloX.TableModel.UTests
                              {
                                  config
                                      .AddDefault(v => v.ToString())
-                                     .Add<string>(nameof(Person.LastName), n => n.ToUpper())
+                                     .Add<string>(nameof(Person.LastName), n => n.ToUpper(CultureInfo.InvariantCulture))
                                      .Add<DateTime>(nameof(Person.BirthDate), date => date.ToString("D", CultureInfo.InvariantCulture));
                              })
                         .WithDecorator<string>(
@@ -55,7 +55,7 @@ namespace SoloX.TableModel.UTests
                              {
                                  config
                                      .AddDefault(v => v.ToString())
-                                     .Add<string>(nameof(Person.LastName), n => n.ToLower());
+                                     .Add<string>(nameof(Person.LastName), n => n.ToLower(CultureInfo.InvariantCulture));
                              });
 
                     builder.UseMemoryTableData<Person>(
@@ -147,7 +147,7 @@ namespace SoloX.TableModel.UTests
                     DecoratorType = typeof(string).AssemblyQualifiedName,
                     Id = "TextRemoteDecorator",
                     DefaultDecoratorExpression = "v => v.ToString()",
-                    DecoratorColumns = new []
+                    DecoratorColumns = new ColumnDecoratorDto[]
                     {
                         new ColumnDecoratorDto()
                         {
@@ -160,7 +160,7 @@ namespace SoloX.TableModel.UTests
 
             var services = new ServiceCollection();
 
-            services.AddTableStructure(
+            services.AddTableModel(
                 builder =>
                 {
                     builder
@@ -176,7 +176,7 @@ namespace SoloX.TableModel.UTests
                              {
                                  config
                                      .AddDefault(v => v.ToString())
-                                     .Add<string>(nameof(Person.LastName), n => n.ToUpper())
+                                     .Add<string>(nameof(Person.LastName), n => n.ToUpper(CultureInfo.InvariantCulture))
                                      .Add<DateTime>(nameof(Person.BirthDate), date => date.ToString("D", CultureInfo.InvariantCulture));
                              })
                         .WithRemoteDecorator<string>(

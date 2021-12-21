@@ -1,16 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// ----------------------------------------------------------------------
+// <copyright file="TableModelController.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
+using Microsoft.AspNetCore.Mvc;
 using SoloX.TableModel.Dto;
 using System;
 using System.Threading.Tasks;
 using SoloX.TableModel.Impl;
 using SoloX.TableModel.Services;
 using SoloX.ExpressionTools.Parser.Impl;
-using SoloX.TableModel.Services.Impl;
 using System.Collections.Generic;
 using SoloX.ExpressionTools.Parser.Impl.Resolver;
 
 namespace SoloX.TableModel.Server
 {
+    /// <summary>
+    /// Table model controller implementation.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class TableModelController : ControllerBase
@@ -18,18 +28,29 @@ namespace SoloX.TableModel.Server
         private readonly ITableDataRepository tableDataRepository;
         private readonly IDtoToTableModelService dtoToTableModelService;
 
+        /// <summary>
+        /// Setup the table model controller.
+        /// </summary>
+        /// <param name="tableDataRepository">The table data repository.</param>
+        /// <param name="dtoToTableModelService">The dto to table model service.</param>
         public TableModelController(ITableDataRepository tableDataRepository, IDtoToTableModelService dtoToTableModelService)
         {
             this.tableDataRepository = tableDataRepository;
             this.dtoToTableModelService = dtoToTableModelService;
         }
 
+        /// <summary>
+        /// Post a data request on the table data matching the given table data Id.
+        /// </summary>
+        /// <param name="id">The table data Id to request.</param>
+        /// <param name="request">The data request to run.</param>
+        /// <returns>The requested data.</returns>
         [HttpPost("{id}")]
         public async Task<IActionResult> PostDataRequestAsync(string id, [FromBody] DataRequestDto request)
         {
-            var tableData = await tableDataRepository.GetTableDataAsync(id);
+            var tableData = await this.tableDataRepository.GetTableDataAsync(id).ConfigureAwait(false);
 
-            return await tableData.Accept(new Visitor(this.dtoToTableModelService), request);
+            return await tableData.Accept(new Visitor(this.dtoToTableModelService), request).ConfigureAwait(false);
         }
 
         private class Visitor : ITableDataVisitor<Task<IActionResult>, DataRequestDto>
@@ -74,11 +95,11 @@ namespace SoloX.TableModel.Server
 
                 if (offset != null && pageSize != null)
                 {
-                    data = await tableData.GetDataPageAsync(sorting, filter, offset.Value, pageSize.Value);
+                    data = await tableData.GetDataPageAsync(sorting, filter, offset.Value, pageSize.Value).ConfigureAwait(false);
                 }
                 else if (offset == null && pageSize == null)
                 {
-                    data = await tableData.GetDataAsync(sorting, filter);
+                    data = await tableData.GetDataAsync(sorting, filter).ConfigureAwait(false);
                 }
                 else
                 {
@@ -91,7 +112,7 @@ namespace SoloX.TableModel.Server
 
         private class ColumnVisitor<TData> : IColumnVisitor<TData, object, string>
         {
-            private ITableFilter<TData> tableFilter;
+            private readonly ITableFilter<TData> tableFilter;
 
             public ColumnVisitor(ITableFilter<TData> tableFilter)
             {
@@ -104,7 +125,7 @@ namespace SoloX.TableModel.Server
 
                 var filterExpression = expressionParser.Parse<Func<TColumn, bool>>(filter);
 
-                tableFilter.Register(column, filterExpression);
+                this.tableFilter.Register(column, filterExpression);
 
                 return null;
             }

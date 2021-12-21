@@ -1,22 +1,34 @@
-﻿using SoloX.ExpressionTools.Parser;
+﻿// ----------------------------------------------------------------------
+// <copyright file="DtoToTableModelService.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
 using SoloX.ExpressionTools.Parser.Impl;
 using SoloX.ExpressionTools.Parser.Impl.Resolver;
 using SoloX.TableModel.Dto;
 using SoloX.TableModel.Impl;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SoloX.TableModel.Services.Impl
 {
+    /// <summary>
+    /// Dto to table model service.
+    /// </summary>
     public class DtoToTableModelService : IDtoToTableModelService
     {
+        /// <inheritdoc/>
         public IColumn<TData> Map<TData>(ColumnDto dto)
         {
+            if (dto == null)
+            {
+                throw new ArgumentNullException(nameof(dto));
+            }
+
             var columnType = Type.GetType(dto.DataType);
 
             var methodGeneric = this.GetType().GetMethod(nameof(Map), 2, new[] { typeof(ColumnDto) });
@@ -26,8 +38,14 @@ namespace SoloX.TableModel.Services.Impl
             return (IColumn<TData>)method.Invoke(this, new[] { dto });
         }
 
-        public IColumn<TData, TColumn> Map<TData, TColumn>(ColumnDto dto)
+        /// <inheritdoc/>
+        public static IColumn<TData, TColumn> Map<TData, TColumn>(ColumnDto dto)
         {
+            if (dto == null)
+            {
+                throw new ArgumentNullException(nameof(dto));
+            }
+
             var expressionParser = new ExpressionParser(new SingleParameterTypeResolver(typeof(TData)));
 
             var dataGetter = expressionParser.Parse<Func<TData, TColumn>>(dto.DataGetterExpression);
@@ -35,8 +53,14 @@ namespace SoloX.TableModel.Services.Impl
             return new Column<TData, TColumn>(dto.Id, dataGetter, dto.CanSort, dto.CanFilter);
         }
 
+        /// <inheritdoc/>
         public ITableStructure<TData> Map<TData>(TableStructureDto dto)
         {
+            if (dto == null)
+            {
+                throw new ArgumentNullException(nameof(dto));
+            }
+
             var idType = Type.GetType(dto.IdType);
 
             var methodGeneric = this.GetType().GetMethod(nameof(Map), 2, new[] { typeof(TableStructureDto) });
@@ -46,8 +70,14 @@ namespace SoloX.TableModel.Services.Impl
             return (ITableStructure<TData>)method.Invoke(this, new[] { dto });
         }
 
+        /// <inheritdoc/>
         public ITableStructure<TData, TId> Map<TData, TId>(TableStructureDto dto)
         {
+            if (dto == null)
+            {
+                throw new ArgumentNullException(nameof(dto));
+            }
+
             var dataType = Type.GetType(dto.DataType);
             var idType = Type.GetType(dto.IdType);
 
@@ -71,11 +101,17 @@ namespace SoloX.TableModel.Services.Impl
                 throw new InvalidCastException($"Table structure TId mismatch {typeof(TId).FullName} [Dto {idType.FullName}]");
             }
 
-            return new TableStructure<TData, TId>(dto.Id, this.Map<TData, TId>(dto.IdColumn), dto.DataColumns.Select(c => this.Map<TData>(c)));
+            return new TableStructure<TData, TId>(dto.Id, Map<TData, TId>(dto.IdColumn), dto.DataColumns.Select(c => this.Map<TData>(c)));
         }
 
+        /// <inheritdoc/>
         public ITableDecorator<TData, TDecorator> Map<TData, TDecorator>(TableDecoratorDto dto, ITableStructure<TData> tableStructure)
         {
+            if (dto == null)
+            {
+                throw new ArgumentNullException(nameof(dto));
+            }
+
             var decoratorType = Type.GetType(dto.DecoratorType);
 
             if (decoratorType == null)
@@ -114,8 +150,14 @@ namespace SoloX.TableModel.Services.Impl
             return tableDecorator;
         }
 
+        /// <inheritdoc/>
         public IColumnDecorator<TData, TDecorator, TColumn> Map<TData, TDecorator, TColumn>(ColumnDecoratorDto dto, IColumn<TData, TColumn> column)
         {
+            if (dto == null)
+            {
+                throw new ArgumentNullException(nameof(dto));
+            }
+
             var expressionParser = new ExpressionParser(new SingleParameterTypeResolver(typeof(TColumn)));
 
             var decoratorExpression = expressionParser.Parse<Func<TColumn, TDecorator>>(dto.DecoratorExpression);

@@ -1,16 +1,16 @@
+// ----------------------------------------------------------------------
+// <copyright file="InMemoryTableDataTest.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
 using FluentAssertions;
 using SoloX.TableModel.Impl;
-using System;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
-using SoloX.TableModel.UTests.Samples;
 using Xunit;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.Sqlite;
-using System.Collections.Generic;
-using SoloX.CodeQuality.Test.Helpers.XUnit.Logger;
-using Xunit.Abstractions;
 
 namespace SoloX.TableModel.UTests
 {

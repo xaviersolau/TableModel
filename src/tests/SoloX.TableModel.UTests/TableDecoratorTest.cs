@@ -1,12 +1,14 @@
-﻿using FluentAssertions;
-using SoloX.TableModel.Impl;
+﻿// ----------------------------------------------------------------------
+// <copyright file="TableDecoratorTest.cs" company="Xavier Solau">
+// Copyright © 2021 Xavier Solau.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+// </copyright>
+// ----------------------------------------------------------------------
+
+using FluentAssertions;
 using SoloX.TableModel.UTests.Samples;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace SoloX.TableModel.UTests
@@ -26,9 +28,9 @@ namespace SoloX.TableModel.UTests
             var last = decorator.Decorate(tableStructure[nameof(Person.LastName)], person);
             var birth = decorator.Decorate(tableStructure[nameof(Person.BirthDate)], person);
 
-            id.Should().BeEquivalentTo(person.Id.ToString());
+            id.Should().BeEquivalentTo(person.Id.ToString(CultureInfo.InvariantCulture));
             first.Should().BeEquivalentTo(person.FirstName);
-            last.Should().BeEquivalentTo(person.LastName.ToUpper());
+            last.Should().BeEquivalentTo(person.LastName.ToUpper(CultureInfo.InvariantCulture));
             birth.Should().BeEquivalentTo(person.BirthDate.ToString("D", CultureInfo.InvariantCulture));
         }
     }
