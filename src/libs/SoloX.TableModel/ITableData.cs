@@ -9,6 +9,7 @@ namespace SoloX.TableModel
     public interface ITableData
     {
         string Id { get; }
+        bool DisableInstanceCaching { get; }
 
         void Accept(ITableDataVisitor visitor);
         TResult Accept<TResult>(ITableDataVisitor<TResult> visitor);

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SoloX.TableModel.Options.Impl;
 
 namespace SoloX.TableModel.Options.Builder
 {
@@ -15,5 +12,8 @@ namespace SoloX.TableModel.Options.Builder
         IMemoryTableDataOptionsBuilder<TData> UseMemoryTableData<TData>(string tableId, Action<IMemoryTableDataOptions<TData>> configAction);
 
         IRemoteTableDataOptionsBuilder<TData> UseRemoteTableData<TData>(string tableId, Action<IRemoteTableDataOptions<TData>> configAction);
+
+        IQueryableTableDataOptionsBuilder<TData, TQueryableTableData> UseQueryableTableData<TData,TQueryableTableData>(string tableId, Action<IQueryableTableDataOptions<TData, TQueryableTableData>> configAction)
+            where TQueryableTableData : ITableData<TData>;
     }
 }
