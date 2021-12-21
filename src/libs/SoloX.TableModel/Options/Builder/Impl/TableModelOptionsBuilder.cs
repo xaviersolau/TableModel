@@ -54,6 +54,16 @@ namespace SoloX.TableModel.Options.Builder.Impl
             return instanceBuilder;
         }
 
+        public IQueryableTableDataOptionsBuilder<TData, TQueryableTableData> UseQueryableTableData<TData, TQueryableTableData>(string tableId, Action<IQueryableTableDataOptions<TData, TQueryableTableData>> configAction)
+        where TQueryableTableData : ITableData<TData>
+        {
+            var instanceBuilder = new QueryableTableDataOptionsBuilder<TData, TQueryableTableData>(tableId, configAction);
+
+            this.tableDataOptionsBuilders.Add(instanceBuilder);
+
+            return instanceBuilder;
+        }
+
         internal void Build(TableModelOptions options)
         {
             this.setupAction(this);

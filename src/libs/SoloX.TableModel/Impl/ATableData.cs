@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SoloX.TableModel.Impl
 {
     public abstract class ATableData<TData> : ITableData<TData>
     {
-        protected ATableData(string id)
+        protected ATableData(string id, bool disableInstanceCaching = false)
         {
             Id = id;
+            DisableInstanceCaching = disableInstanceCaching;
         }
 
         public string Id { get; }
+        public bool DisableInstanceCaching { get; }
 
         public void Accept(ITableDataVisitor visitor)
         {

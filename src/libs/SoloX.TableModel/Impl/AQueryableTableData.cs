@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SoloX.TableModel.Impl
@@ -9,7 +7,7 @@ namespace SoloX.TableModel.Impl
     public abstract class AQueryableTableData<TData> : ATableData<TData>
     {
         protected AQueryableTableData(string id)
-            : base(id)
+            : base(id, true)
         {
         }
 

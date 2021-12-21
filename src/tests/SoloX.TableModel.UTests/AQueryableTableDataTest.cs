@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -128,32 +129,61 @@ namespace SoloX.TableModel.UTests
             });
         }
 
+        [Fact]
+        public async Task ItShouldSetupServiceCollectionWithQueryableTableData()
+        {
+            await SetupDbContextAndRunTestAsync(async dbContext =>
+            {
+                var services = new ServiceCollection();
+                services.AddTransient(r => dbContext);
+
+                services.AddTableStructure(builder =>
+                {
+                    builder.UseQueryableTableData<FamilyMemberDto, FamilyMemberTableData>("MyTableId", options =>
+                    {
+                        options.Factory = (tableId, provider) =>
+                            new FamilyMemberTableData(tableId, provider.GetService<FamilyDbContext>());
+                    });
+                });
+
+                await using var sp = services.BuildServiceProvider();
+
+                var tableDataRepository = sp.GetService<ITableDataRepository>();
+
+                Assert.NotNull(tableDataRepository);
+
+                var tableData = await tableDataRepository.GetTableDataAsync<FamilyMemberDto>("MyTableId");
+
+                Assert.NotNull(tableData);
+                Assert.IsType<FamilyMemberTableData>(tableData);
+            });
+            
+        }
+
         private async Task SetupDbContextAndRunTestAsync(Func<FamilyDbContext, Task> testHandler)
         {
-            using (var connection = new SqliteConnection("DataSource=:memory:"))
+            await using var connection = new SqliteConnection("DataSource=:memory:");
+            var loggerFactory = new TestLoggerFactory(testOutputHelper);
+            connection.Open();
+
+            var options = new DbContextOptionsBuilder<FamilyDbContext>()
+                .UseSqlite(connection) // Set the connection explicitly, so it won't be closed automatically by EF
+                .UseLoggerFactory(loggerFactory)
+                .EnableSensitiveDataLogging()
+                .Options;
+
+            await using (var dbContext = new FamilyDbContext(options))
             {
-                var loggerFactory = new TestLoggerFactory(testOutputHelper);
-                connection.Open();
+                await dbContext.Database.EnsureCreatedAsync();
+            }
 
-                var options = new DbContextOptionsBuilder<FamilyDbContext>()
-                    .UseSqlite(connection) // Set the connection explicitly, so it won't be closed automatically by EF
-                    .UseLoggerFactory(loggerFactory)
-                    .EnableSensitiveDataLogging()
-                    .Options;
+            await using (var dbContext = new FamilyDbContext(options))
+            {
+                dbContext.Families.AddRange(Family.GetSomeFamilies());
 
-                using (var dbContext = new FamilyDbContext(options))
-                {
-                    dbContext.Database.EnsureCreated();
-                }
+                await dbContext.SaveChangesAsync();
 
-                using (var dbContext = new FamilyDbContext(options))
-                {
-                    dbContext.Families.AddRange(Family.GetSomeFamilies());
-
-                    dbContext.SaveChanges();
-
-                    await testHandler(dbContext);
-                }
+                await testHandler(dbContext);
             }
         }
 

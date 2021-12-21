@@ -3,7 +3,6 @@ using SoloX.TableModel.Options.Impl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SoloX.TableModel.Impl
@@ -33,8 +32,10 @@ namespace SoloX.TableModel.Impl
                 var tableDataOption = tableDataOptions[tableId];
 
                 tableData = await tableDataOption.CreateModelInstanceAsync(this.serviceProvider);
-
-                this.tableDataMap.Add(tableId, tableData);
+                if (!tableData.DisableInstanceCaching)
+                {
+                    this.tableDataMap.Add(tableId, tableData);
+                }
             }
 
             return tableData;
