@@ -36,7 +36,7 @@ jobs:
         parallel: true
 
     - name: Test Coverage SoloX.TableModel.Server.UTests
-      id: coverage-utest-wasm
+      id: coverage-utest-server
       run: |
         dotnet test ./src/tests/SoloX.TableModel.Server.UTests --configuration Release --no-restore --no-build --collect:"XPlat Code Coverage" --settings coverlet.runsettings
         echo "::set-output name=FILE::$(find ./src/tests/SoloX.TableModel.Server.UTests -name 'coverage.info' -print)"
@@ -44,8 +44,8 @@ jobs:
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ${{ steps.coverage-utest-wasm.outputs.FILE }}
-        flag-name: coverage-utest-wasm
+        path-to-lcov: ${{ steps.coverage-utest-server.outputs.FILE }}
+        flag-name: coverage-utest-server
         parallel: true
 
     - name: Finish coverals
@@ -55,7 +55,9 @@ jobs:
         parallel-finished: true
 
     - name: Pack
-      run: dotnet pack --configuration Release --no-restore --no-build
+      run: |
+        dotnet pack ./src/libs/SoloX.TableModel/SoloX.TableModel.csproj --configuration Release --no-restore --no-build
+        dotnet pack ./src/libs/SoloX.TableModel.Server/SoloX.TableModel.Server.csproj --configuration Release --no-restore --no-build
     - name: Upload Packages
       uses: actions/upload-artifact@v2
       with:
