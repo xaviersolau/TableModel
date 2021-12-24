@@ -53,6 +53,20 @@ namespace SoloX.TableModel.Server
             return await tableData.Accept(new Visitor(this.dtoToTableModelService), request).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Post a data count request on the table data matching the given table data Id.
+        /// </summary>
+        /// <param name="id">The table data Id to request.</param>
+        /// <param name="request">The data count request to run.</param>
+        /// <returns>The requested data count.</returns>
+        [HttpPost("{id}/Count")]
+        public async Task<IActionResult> PostDataCountRequestAsync(string id, [FromBody] DataCountRequestDto request)
+        {
+            var tableData = await this.tableDataRepository.GetTableDataAsync(id).ConfigureAwait(false);
+
+            return await tableData.Accept(new CountVisitor(this.dtoToTableModelService), request).ConfigureAwait(false);
+        }
+
         private class Visitor : ITableDataVisitor<Task<IActionResult>, DataRequestDto>
         {
             private readonly IDtoToTableModelService dtoToTableModelService;
@@ -107,6 +121,36 @@ namespace SoloX.TableModel.Server
                 }
 
                 return new OkObjectResult(data);
+            }
+        }
+
+        private class CountVisitor : ITableDataVisitor<Task<IActionResult>, DataCountRequestDto>
+        {
+            private readonly IDtoToTableModelService dtoToTableModelService;
+
+            public CountVisitor(IDtoToTableModelService dtoToTableModelService)
+            {
+                this.dtoToTableModelService = dtoToTableModelService;
+            }
+
+            public async Task<IActionResult> Visit<TData>(ITableData<TData> tableData, DataCountRequestDto request)
+            {
+                ITableFilter<TData> filter = new TableFilter<TData>();
+                if (request.Filters != null)
+                {
+                    var columnVisitor = new ColumnVisitor<TData>(filter);
+
+                    foreach (var requestFilter in request.Filters)
+                    {
+                        var column = this.dtoToTableModelService.Map<TData>(requestFilter.Column);
+
+                        column.Accept(columnVisitor, requestFilter.FilterExpression);
+                    }
+                }
+
+                var dataCount = await tableData.GetDataCountAsync(filter).ConfigureAwait(false);
+
+                return new OkObjectResult(dataCount);
             }
         }
 

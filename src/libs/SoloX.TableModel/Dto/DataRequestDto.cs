@@ -29,12 +29,12 @@ namespace SoloX.TableModel.Dto
         /// <summary>
         /// Get/Set sorting options if any.
         /// </summary>
-        public IEnumerable<SortingDto> Sortings { get; set; }
+        public IEnumerable<SortingDto>? Sortings { get; set; }
 
         /// <summary>
         /// Get/Set filters to apply on the data.
         /// </summary>
-        public IEnumerable<FilterDto> Filters { get; set; }
+        public IEnumerable<FilterDto>? Filters { get; set; }
     }
 }
 #pragma warning restore CS8618 // Un champ non-nullable doit contenir une valeur non-null lors de la fermeture du constructeur. Envisagez de déclarer le champ comme nullable.
