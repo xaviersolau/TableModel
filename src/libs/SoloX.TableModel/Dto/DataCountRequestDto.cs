@@ -19,7 +19,7 @@ namespace SoloX.TableModel.Dto
         /// <summary>
         /// Get/Set filters to apply on counting.
         /// </summary>
-        public IEnumerable<FilterDto> Filters { get; set; }
+        public IEnumerable<FilterDto>? Filters { get; set; }
     }
 }
 #pragma warning restore CS8618 // Un champ non-nullable doit contenir une valeur non-null lors de la fermeture du constructeur. Envisagez de déclarer le champ comme nullable.

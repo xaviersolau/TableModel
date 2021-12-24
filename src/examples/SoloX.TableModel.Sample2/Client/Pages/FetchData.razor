@@ -22,6 +22,8 @@ else
         <button type="submit">Submit</button>
     </EditForm>
 
+    <p>Forcast count: @forecastCount</p>
+
     <table class="table">
         <thead>
             <tr>
@@ -48,6 +50,7 @@ else
 @code {
     private IEnumerable<WeatherForecast> forecasts;
     private string name;
+    private int forecastCount;
 
     protected override async Task OnInitializedAsync()
     {
@@ -69,6 +72,8 @@ else
         {
             tableFilter.Register(nameof(WeatherForecast.Summary), wf => wf.Summary, v => v.Contains(this.name));
         }
+
+        forecastCount = await data.GetDataCountAsync(tableFilter);
 
         forecasts = await data.GetDataAsync(tableFilter);
     }
