@@ -165,7 +165,7 @@ namespace SoloX.TableModel.Server
 
             public object Visit<TColumn>(IColumn<TData, TColumn> column, string filter)
             {
-                var expressionParser = new ExpressionParser(new SingleParameterTypeResolver(typeof(TColumn)));
+                var expressionParser = new ExpressionParser(new SingleParameterTypeResolver(typeof(TColumn)), new StaticMethodResolver(typeof(string)));
 
                 var filterExpression = expressionParser.Parse<Func<TColumn, bool>>(filter);
 
