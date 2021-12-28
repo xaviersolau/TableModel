@@ -27,7 +27,7 @@ namespace SoloX.TableModel.Options.Impl
         /// </summary>
         /// <param name="tableId">Table data Id.</param>
         public RemoteTableDataOptions(string tableId)
-            : base(tableId)
+            : base(tableId, typeof(TData))
         {
         }
 

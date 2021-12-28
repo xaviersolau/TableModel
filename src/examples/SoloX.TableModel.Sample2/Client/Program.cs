@@ -28,7 +28,7 @@ namespace SoloX.TableModel.Sample2.Client
                         "WeatherForecast",
                         config =>
                         {
-                            config.HttpClient = new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress + "api/TableModel/") };
+                            config.HttpClient = new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress + "api/TableData/") };
                         });
                 });
 

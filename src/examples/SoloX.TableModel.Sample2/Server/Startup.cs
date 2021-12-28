@@ -7,9 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System.Linq;
-using SoloX.TableModel;
 using SoloX.TableModel.Sample2.Shared;
 using System;
+using SoloX.TableModel.Server;
 
 namespace SoloX.TableModel.Sample2.Server
 {
@@ -40,7 +40,7 @@ namespace SoloX.TableModel.Sample2.Server
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SoloX.TableModel.Sample2.Server", Version = "v1" });
             });
 
-            services.AddTableModel(
+            services.AddTableModelServer(
                 builder =>
                 {
                     builder.UseMemoryTableData<WeatherForecast>(

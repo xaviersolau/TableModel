@@ -26,7 +26,7 @@ namespace SoloX.TableModel.Options.Impl
         /// </summary>
         /// <param name="tableId">Table data Id.</param>
         public MemoryTableDataOptions(string tableId)
-            : base(tableId)
+            : base(tableId, typeof(TData))
         {
         }
 

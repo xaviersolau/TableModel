@@ -1,82 +1,83 @@
 ﻿// ----------------------------------------------------------------------
-// <copyright file="TableModelController.cs" company="Xavier Solau">
+// <copyright file="TableDataEndPointService.cs" company="Xavier Solau">
 // Copyright © 2021 Xavier Solau.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 // </copyright>
 // ----------------------------------------------------------------------
 
-using Microsoft.AspNetCore.Mvc;
+using SoloX.ExpressionTools.Parser.Impl;
+using SoloX.ExpressionTools.Parser.Impl.Resolver;
 using SoloX.TableModel.Dto;
-using System;
-using System.Threading.Tasks;
 using SoloX.TableModel.Impl;
 using SoloX.TableModel.Services;
-using SoloX.ExpressionTools.Parser.Impl;
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using SoloX.ExpressionTools.Parser.Impl.Resolver;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace SoloX.TableModel.Server
+namespace SoloX.TableModel.Server.Services.Impl
 {
     /// <summary>
-    /// Table model controller implementation.
+    /// TableData End-Point service implementation.
     /// </summary>
-    [Route("api/[controller]")]
-    [ApiController]
-    public class TableModelController : ControllerBase
+    public class TableDataEndPointService : ITableDataEndPointService
     {
         private readonly ITableDataRepository tableDataRepository;
         private readonly IDtoToTableModelService dtoToTableModelService;
 
         /// <summary>
-        /// Setup the table model controller.
+        /// Setup TableDataEndPointService.
         /// </summary>
         /// <param name="tableDataRepository">The table data repository.</param>
         /// <param name="dtoToTableModelService">The dto to table model service.</param>
-        public TableModelController(ITableDataRepository tableDataRepository, IDtoToTableModelService dtoToTableModelService)
+        public TableDataEndPointService(ITableDataRepository tableDataRepository, IDtoToTableModelService dtoToTableModelService)
         {
             this.tableDataRepository = tableDataRepository;
             this.dtoToTableModelService = dtoToTableModelService;
         }
 
-        /// <summary>
-        /// Post a data request on the table data matching the given table data Id.
-        /// </summary>
-        /// <param name="id">The table data Id to request.</param>
-        /// <param name="request">The data request to run.</param>
-        /// <returns>The requested data.</returns>
-        [HttpPost("{id}")]
-        public async Task<IActionResult> PostDataRequestAsync(string id, [FromBody] DataRequestDto request)
+        /// <inheritdoc/>
+        public async Task<IEnumerable<TableDataDto>> GetRegisteredTableDataAsync()
         {
-            var tableData = await this.tableDataRepository.GetTableDataAsync(id).ConfigureAwait(false);
+            var idsAndTypes = await this.tableDataRepository.GetTableDataIdsAndTypesAsync().ConfigureAwait(false);
 
-            return await tableData.Accept(new Visitor(this.dtoToTableModelService), request).ConfigureAwait(false);
+            return idsAndTypes.Select(i => new TableDataDto()
+            {
+                Id = i.Id,
+                DataType = i.DataType.AssemblyQualifiedName,
+            });
         }
 
-        /// <summary>
-        /// Post a data count request on the table data matching the given table data Id.
-        /// </summary>
-        /// <param name="id">The table data Id to request.</param>
-        /// <param name="request">The data count request to run.</param>
-        /// <returns>The requested data count.</returns>
-        [HttpPost("{id}/Count")]
-        public async Task<IActionResult> PostDataCountRequestAsync(string id, [FromBody] DataCountRequestDto request)
+        /// <inheritdoc/>
+        public async Task<int> ProcessDataCountRequestAsync(string id, DataCountRequestDto request)
         {
             var tableData = await this.tableDataRepository.GetTableDataAsync(id).ConfigureAwait(false);
 
             return await tableData.Accept(new CountVisitor(this.dtoToTableModelService), request).ConfigureAwait(false);
         }
 
-        private class Visitor : ITableDataVisitor<Task<IActionResult>, DataRequestDto>
+        /// <inheritdoc/>
+        public async Task<IEnumerable<TData>> ProcessDataRequestAsync<TData>(string id, DataRequestDto request)
+        {
+            var tableData = await this.tableDataRepository.GetTableDataAsync(id).ConfigureAwait(false);
+
+            var data = await tableData.Accept(new DataVisitor(this.dtoToTableModelService), request).ConfigureAwait(false);
+
+            return (IEnumerable<TData>)data;
+        }
+
+        private class DataVisitor : ITableDataVisitor<Task<IEnumerable>, DataRequestDto>
         {
             private readonly IDtoToTableModelService dtoToTableModelService;
 
-            public Visitor(IDtoToTableModelService dtoToTableModelService)
+            public DataVisitor(IDtoToTableModelService dtoToTableModelService)
             {
                 this.dtoToTableModelService = dtoToTableModelService;
             }
 
-            public async Task<IActionResult> Visit<TData>(ITableData<TData> tableData, DataRequestDto request)
+            public async Task<IEnumerable> Visit<TData>(ITableData<TData> tableData, DataRequestDto request)
             {
                 var offset = request.Offset;
                 var pageSize = request.PageSize;
@@ -120,11 +121,11 @@ namespace SoloX.TableModel.Server
                     throw new ArgumentException($"Bad request: {nameof(request.Offset)} {nameof(request.PageSize)} must be both set or both null");
                 }
 
-                return new OkObjectResult(data);
+                return data;
             }
         }
 
-        private class CountVisitor : ITableDataVisitor<Task<IActionResult>, DataCountRequestDto>
+        private class CountVisitor : ITableDataVisitor<Task<int>, DataCountRequestDto>
         {
             private readonly IDtoToTableModelService dtoToTableModelService;
 
@@ -133,7 +134,7 @@ namespace SoloX.TableModel.Server
                 this.dtoToTableModelService = dtoToTableModelService;
             }
 
-            public async Task<IActionResult> Visit<TData>(ITableData<TData> tableData, DataCountRequestDto request)
+            public async Task<int> Visit<TData>(ITableData<TData> tableData, DataCountRequestDto request)
             {
                 ITableFilter<TData> filter = new TableFilter<TData>();
                 if (request.Filters != null)
@@ -150,7 +151,7 @@ namespace SoloX.TableModel.Server
 
                 var dataCount = await tableData.GetDataCountAsync(filter).ConfigureAwait(false);
 
-                return new OkObjectResult(dataCount);
+                return dataCount;
             }
         }
 
