@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------
-// <copyright file="TableModelControllerTest.cs" company="Xavier Solau">
+// <copyright file="TableDataEndPointServiceTest.cs" company="Xavier Solau">
 // Copyright © 2021 Xavier Solau.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
@@ -7,7 +7,6 @@
 // ----------------------------------------------------------------------
 
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
 using SoloX.TableModel.Dto;
 using System;
@@ -19,13 +18,14 @@ using SoloX.TableModel.UTests.Samples;
 using Xunit;
 using SoloX.TableModel.Services;
 using System.Linq;
+using SoloX.TableModel.Server.Services.Impl;
 
 namespace SoloX.TableModel.Server.UTests
 {
-    public class TableModelControllerTest
+    public class TableDataEndPointServiceTest
     {
         [Fact]
-        public async Task ItShouldGetFilteredDataThoughTheController()
+        public async Task ItShouldGetFilteredDataThoughTheEndPoint()
         {
             Expression<Func<string, bool>> dataFilterExp = d => d.Contains("J");
             Expression<Func<Person, string>> dataGetterExp = d => d.FirstName;
@@ -62,14 +62,13 @@ namespace SoloX.TableModel.Server.UTests
                 .Setup(s => s.Map<Person>(columnDto))
                 .Returns(new Column<Person, string>(columnDto.Id, dataGetterExp));
 
-            var controller = new TableModelController(repositoryMock.Object, dtoToTableModelServiceMock.Object);
+            var endPointService = new TableDataEndPointService(repositoryMock.Object, dtoToTableModelServiceMock.Object);
 
-            var data = await controller.PostDataRequestAsync(tableId, request);
+            var data = await endPointService.ProcessDataRequestAsync<object>(tableId, request);
 
             data.Should().NotBeNull();
 
-            var result = data.Should().BeOfType<OkObjectResult>()
-                .Which.Value.Should().BeAssignableTo<IEnumerable<Person>>().Which;
+            var result = data.Should().BeAssignableTo<IEnumerable<Person>>().Which;
 
             result.Should().BeEquivalentTo(Person.GetSomePersons().Where(p => p.FirstName.Contains("J", StringComparison.InvariantCulture)));
         }

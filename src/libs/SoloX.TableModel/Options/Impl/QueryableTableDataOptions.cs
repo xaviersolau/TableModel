@@ -26,7 +26,7 @@ namespace SoloX.TableModel.Options.Impl
         /// Setup QueryableTableDataOptions with Id.
         /// </summary>
         /// <param name="tableDataId">The table Id.</param>
-        public QueryableTableDataOptions(string tableDataId) : base(tableDataId)
+        public QueryableTableDataOptions(string tableDataId) : base(tableDataId, typeof(TData))
         {
         }
 

@@ -6,6 +6,7 @@
 // </copyright>
 // ----------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -16,6 +17,12 @@ namespace SoloX.TableModel
     /// </summary>
     public interface ITableDataRepository
     {
+        /// <summary>
+        /// Get all registered table data (Id, DataType) items.
+        /// </summary>
+        /// <returns>The registered (Id, DataType) items.</returns>
+        Task<IEnumerable<(string Id, Type DataType)>> GetTableDataIdsAndTypesAsync();
+
         /// <summary>
         /// Get all registered table data Ids.
         /// </summary>

@@ -13,8 +13,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SoloX.ExpressionTools.Parser" Version="1.0.1-alpha.3" />
-    <PackageReference Include="SoloX.ExpressionTools.Transform" Version="1.0.1-alpha.3" />
+    <PackageReference Include="SoloX.ExpressionTools.Parser" Version="1.0.1-alpha.4" />
+    <PackageReference Include="SoloX.ExpressionTools.Transform" Version="1.0.1-alpha.4" />
   </ItemGroup>
 
 </Project>

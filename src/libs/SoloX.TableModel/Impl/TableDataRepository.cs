@@ -77,6 +77,13 @@ namespace SoloX.TableModel.Impl
         }
 
         ///<inheritdoc/>
+        public Task<IEnumerable<(string Id, Type DataType)>> GetTableDataIdsAndTypesAsync()
+        {
+            // TODO Add additional Id in case a user manually registered some.
+            return Task.FromResult(this.tableDataOptions.Select(i => (i.Key, i.Value.DataType)).AsEnumerable());
+        }
+
+        ///<inheritdoc/>
         public void Register<TData>(ITableData<TData> data)
         {
             if (data == null)

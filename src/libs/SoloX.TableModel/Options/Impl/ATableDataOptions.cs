@@ -20,15 +20,22 @@ namespace SoloX.TableModel.Options.Impl
         /// Setup instance with Id.
         /// </summary>
         /// <param name="tableDataId">Table data Id.</param>
-        protected ATableDataOptions(string tableDataId)
+        /// <param name="dataType">Data type.</param>
+        protected ATableDataOptions(string tableDataId, Type dataType)
         {
             TableDataId = tableDataId;
+            DataType = dataType;
         }
 
         /// <summary>
         /// Get Table data Id
         /// </summary>
         public string TableDataId { get; }
+
+        /// <summary>
+        /// Get Table data type.
+        /// </summary>
+        public Type DataType { get; }
 
         /// <summary>
         /// Create table Data instance from the current options.
