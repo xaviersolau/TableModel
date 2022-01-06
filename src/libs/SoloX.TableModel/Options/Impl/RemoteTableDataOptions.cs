@@ -22,6 +22,12 @@ namespace SoloX.TableModel.Options.Impl
         /// <inheritdoc/>
         public HttpClient HttpClient { get; set; }
 
+        /// <inheritdoc/>
+        public string HttpDataSuffix { get; set; } = "data";
+
+        /// <inheritdoc/>
+        public string HttpCountSuffix { get; set; } = "count";
+
         /// <summary>
         /// Setup remote table data options.
         /// </summary>
@@ -34,7 +40,7 @@ namespace SoloX.TableModel.Options.Impl
         /// <inheritdoc/>
         public override Task<ITableData> CreateModelInstanceAsync(IServiceProvider serviceProvider)
         {
-            return Task.FromResult<ITableData>(new RemoteTableData<TData>(TableDataId, HttpClient));
+            return Task.FromResult<ITableData>(new RemoteTableData<TData>(TableDataId, HttpClient, HttpDataSuffix, HttpCountSuffix));
         }
     }
 }

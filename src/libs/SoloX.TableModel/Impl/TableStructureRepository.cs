@@ -52,6 +52,12 @@ namespace SoloX.TableModel.Impl
         }
 
         ///<inheritdoc/>
+        public Task<ITableDecorator<TData, TDecorator>> GetTableDecoratorAsync<TData, TDecorator>(string decoratorId)
+        {
+            return GetTableDecoratorAsync<TData, TDecorator>(typeof(TData).FullName, decoratorId);
+        }
+
+        ///<inheritdoc/>
         public async Task<ITableDecorator> GetTableDecoratorAsync(string tableId, string decoratorId)
         {
             if (!(this.tableDecorators.TryGetValue(tableId, out var decorators) && decorators.TryGetValue(decoratorId, out var tableDecorator)))
@@ -84,11 +90,23 @@ namespace SoloX.TableModel.Impl
         }
 
         ///<inheritdoc/>
+        public Task<ITableStructure<TData, TId>> GetTableStructureAsync<TData, TId>()
+        {
+            return GetTableStructureAsync<TData, TId>(typeof(TData).FullName);
+        }
+
+        ///<inheritdoc/>
         public async Task<ITableStructure<TData>> GetTableStructureAsync<TData>(string tableId)
         {
             var tableStructure = await GetTableStructureAsync(tableId).ConfigureAwait(false);
 
             return (ITableStructure<TData>)tableStructure;
+        }
+
+        ///<inheritdoc/>
+        public Task<ITableStructure<TData>> GetTableStructureAsync<TData>()
+        {
+            return GetTableStructureAsync<TData>(typeof(TData).FullName);
         }
 
         ///<inheritdoc/>

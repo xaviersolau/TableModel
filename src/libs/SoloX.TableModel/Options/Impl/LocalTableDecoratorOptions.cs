@@ -6,6 +6,7 @@
 // </copyright>
 // ----------------------------------------------------------------------
 
+using SoloX.ExpressionTools.Transform.Impl.Resolver;
 using SoloX.TableModel.Impl;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,11 @@ namespace SoloX.TableModel.Options.Impl
         /// </summary>
         public Expression<Func<object, TDecorator>> DefaultDecoratorExpression { get; private set; }
 
+        /// <summary>
+        /// Get Default header decorator expression.
+        /// </summary>
+        public Expression<Func<IColumn<TData>, TDecorator>> DefaultHeaderDecoratorExpression { get; private set; }
+
         private readonly Dictionary<string, Action<TableDecorator<TData, TDecorator>>> columnDecoratorRegisterActions = new Dictionary<string, Action<TableDecorator<TData, TDecorator>>>();
 
         private IReadOnlyDictionary<string, Action<TableDecorator<TData, TDecorator>>> ColumnDecoratorRegisterActions => this.columnDecoratorRegisterActions;
@@ -43,7 +49,9 @@ namespace SoloX.TableModel.Options.Impl
         }
 
         /// <inheritdoc/>
-        public ILocalTableDecoratorDataOptions<TData, TDecorator> AddDefault(Expression<Func<object, TDecorator>> defaultDecoratorExpression)
+        public ILocalTableDecoratorDataOptions<TData, TDecorator> AddDefault(
+            Expression<Func<object, TDecorator>> defaultDecoratorExpression,
+            Expression<Func<IColumn<TData>, TDecorator>> defaultHeaderDecoratorExpression)
         {
             if (DefaultDecoratorExpression != null)
             {
@@ -52,11 +60,18 @@ namespace SoloX.TableModel.Options.Impl
 
             DefaultDecoratorExpression = defaultDecoratorExpression;
 
+            if (DefaultHeaderDecoratorExpression != null)
+            {
+                throw new InvalidDataException("Default header decorator expression already defined");
+            }
+
+            DefaultHeaderDecoratorExpression = defaultHeaderDecoratorExpression;
+
             return this;
         }
 
         /// <inheritdoc/>
-        public ILocalTableDecoratorDataOptions<TData, TDecorator> Add<TColumn>(string columnId, Expression<Func<TColumn, TDecorator>> decoratorExpression)
+        public ILocalTableDecoratorDataOptions<TData, TDecorator> Add<TColumn>(string columnId, Expression<Func<TColumn, TDecorator>> decoratorExpression, Expression<Func<TDecorator>> headerDecoratorExpression)
         {
             if (this.columnDecoratorRegisterActions.ContainsKey(columnId))
             {
@@ -65,10 +80,20 @@ namespace SoloX.TableModel.Options.Impl
 
             this.columnDecoratorRegisterActions.Add(columnId, tableDecorator =>
             {
-                tableDecorator.Register(columnId, decoratorExpression);
+                tableDecorator.Register(columnId, decoratorExpression, headerDecoratorExpression);
             });
 
             return this;
+        }
+
+        /// <inheritdoc/>
+        public ILocalTableDecoratorDataOptions<TData, TDecorator> Add<TColumn>(
+            Expression<Func<TData, TColumn>> columnPropertyExpression,
+            Expression<Func<TColumn, TDecorator>> decoratorExpression,
+            Expression<Func<TDecorator>> headerDecoratorExpression)
+        {
+            var propertyNameResolver = new PropertyNameResolver();
+            return Add(propertyNameResolver.GetPropertyName(columnPropertyExpression), decoratorExpression, headerDecoratorExpression);
         }
 
         /// <inheritdoc/>
@@ -85,7 +110,7 @@ namespace SoloX.TableModel.Options.Impl
 
             var tableDecorator = new TableDecorator<TData, TDecorator>(TableDecoratorId, tableStructure);
 
-            tableDecorator.RegisterDefault(DefaultDecoratorExpression);
+            tableDecorator.RegisterDefault(DefaultDecoratorExpression, DefaultHeaderDecoratorExpression);
 
             foreach (var setupAction in ColumnDecoratorRegisterActions)
             {

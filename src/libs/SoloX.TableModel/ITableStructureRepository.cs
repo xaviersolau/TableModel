@@ -32,12 +32,29 @@ namespace SoloX.TableModel
         Task<ITableStructure<TData, TId>> GetTableStructureAsync<TData, TId>(string tableId);
 
         /// <summary>
+        /// Get the registered table structure matching the given tableId (table structure fully typed).
+        /// </summary>
+        /// <typeparam name="TData">Data type the table structure is based on.</typeparam>
+        /// <typeparam name="TId">Id type used to identify data items.</typeparam>
+        /// <returns>The registered table structure.</returns>
+        /// <remarks>TData type name is used as table structure Id.</remarks>
+        Task<ITableStructure<TData, TId>> GetTableStructureAsync<TData, TId>();
+
+        /// <summary>
         /// Get the registered table structure matching the given tableId (table structure with unspecified Id type).
         /// </summary>
         /// <typeparam name="TData">Data type the table structure is based on.</typeparam>
         /// <param name="tableId">The table Id to match.</param>
         /// <returns>The registered table structure.</returns>
         Task<ITableStructure<TData>> GetTableStructureAsync<TData>(string tableId);
+
+        /// <summary>
+        /// Get the registered table structure matching the given tableId (table structure with unspecified Id type).
+        /// </summary>
+        /// <typeparam name="TData">Data type the table structure is based on.</typeparam>
+        /// <returns>The registered table structure.</returns>
+        /// <remarks>TData type name is used as table structure Id.</remarks>
+        Task<ITableStructure<TData>> GetTableStructureAsync<TData>();
 
         /// <summary>
         /// Get the registered table structure matching the given tableId (returning table structure base interface).
@@ -55,6 +72,16 @@ namespace SoloX.TableModel
         /// <param name="decoratorId">The table decorator Id.</param>
         /// <returns>The matching table decorator.</returns>
         Task<ITableDecorator<TData, TDecorator>> GetTableDecoratorAsync<TData, TDecorator>(string tableId, string decoratorId);
+
+        /// <summary>
+        /// Get the registered table decorator matching the given table structure Id and the given table decorator Id.
+        /// </summary>
+        /// <typeparam name="TData">Data type the table structure is based on.</typeparam>
+        /// <typeparam name="TDecorator">Decorator data type.</typeparam>
+        /// <param name="decoratorId">The table decorator Id.</param>
+        /// <returns>The matching table decorator.</returns>
+        /// <remarks>TData type name is used as table structure Id.</remarks>
+        Task<ITableDecorator<TData, TDecorator>> GetTableDecoratorAsync<TData, TDecorator>(string decoratorId);
 
         /// <summary>
         /// Get the registered table decorator matching the given table structure Id and the given table decorator Id (retuning table decorator base interface).

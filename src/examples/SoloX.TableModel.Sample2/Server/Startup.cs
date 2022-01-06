@@ -44,7 +44,6 @@ namespace SoloX.TableModel.Sample2.Server
                 builder =>
                 {
                     builder.UseMemoryTableData<WeatherForecast>(
-                        "WeatherForecast",
                         config =>
                         {
                             var rng = new Random();

@@ -39,7 +39,7 @@ namespace SoloX.TableModel.UTests
 
             var httpClient = httpClientBuilder
                 .WithBaseAddress(new Uri(baseAddress))
-                .WithJsonContentRequest<DataRequestDto>($"/api/TableModel/RemotePersonData", HttpMethod.Post)
+                .WithJsonContentRequest<DataRequestDto>($"/api/TableModel/RemotePersonData/Data", HttpMethod.Post)
                 .RespondingJsonContent(
                     request =>
                     {
@@ -52,7 +52,7 @@ namespace SoloX.TableModel.UTests
                 .Build();
 
 
-            var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient);
+            var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient, "Data", "Count");
 
             var resultData = await dataTable.GetDataAsync();
 
@@ -77,7 +77,7 @@ namespace SoloX.TableModel.UTests
 
             var httpClient = httpClientBuilder
                 .WithBaseAddress(new Uri(baseAddress))
-                .WithJsonContentRequest<DataRequestDto>($"/api/TableModel/RemotePersonData", HttpMethod.Post)
+                .WithJsonContentRequest<DataRequestDto>($"/api/TableModel/RemotePersonData/Data", HttpMethod.Post)
                 .RespondingJsonContent(
                     request =>
                     {
@@ -94,7 +94,7 @@ namespace SoloX.TableModel.UTests
                 .Build();
 
 
-            var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient);
+            var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient, "Data", "Count");
 
             var resultData = await dataTable.GetDataPageAsync(1, 2);
 
@@ -129,7 +129,7 @@ namespace SoloX.TableModel.UTests
                 .Build();
 
 
-            var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient);
+            var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient, "Data", "Count");
 
             var resultData = await dataTable.GetDataCountAsync();
 
@@ -167,7 +167,7 @@ namespace SoloX.TableModel.UTests
                 .Build();
 
 
-            var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient);
+            var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient, "Data", "Count");
 
             var columnMock = SetupColumnMock(columnId, dataGetterExp);
 
@@ -199,7 +199,7 @@ namespace SoloX.TableModel.UTests
 
             var httpClient = httpClientBuilder
                 .WithBaseAddress(new Uri(baseAddress))
-                .WithJsonContentRequest<DataRequestDto>($"/api/TableModel/RemotePersonData", HttpMethod.Post)
+                .WithJsonContentRequest<DataRequestDto>($"/api/TableModel/RemotePersonData/Data", HttpMethod.Post)
                 .RespondingJsonContent(
                     request =>
                     {
@@ -220,7 +220,7 @@ namespace SoloX.TableModel.UTests
                 .Build();
 
 
-            var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient);
+            var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient, "Data", "Count");
 
             var columnMock = SetupColumnMock(columnId, dataGetterExp);
 

@@ -21,17 +21,21 @@ namespace SoloX.TableModel.Impl
     public class ColumnDecorator<TData, TDecorator, TColumn> : IColumnDecorator<TData, TDecorator, TColumn>
     {
         private readonly Func<TData, TDecorator> decorator;
+        private readonly Func<TDecorator> headerDecorator;
 
         /// <summary>
         /// Setup a ColumnDecorator.
         /// </summary>
         /// <param name="column">The column to decorate.</param>
-        /// <param name="relativeDecoratorExpression"></param>
+        /// <param name="relativeDecoratorExpression">Data Decorator expression from column value.</param>
+        /// <param name="headerDecoratorExpression">Header Decorator expression.</param>
         public ColumnDecorator(IColumn<TData, TColumn> column,
-            Expression<Func<TColumn, TDecorator>> relativeDecoratorExpression)
+            Expression<Func<TColumn, TDecorator>> relativeDecoratorExpression,
+            Expression<Func<TDecorator>> headerDecoratorExpression)
         {
             Column = column ?? throw new ArgumentNullException(nameof(column));
-            RelativeDecoratorExpression = relativeDecoratorExpression;
+            HeaderDecoratorExpression = headerDecoratorExpression ?? throw new ArgumentNullException(nameof(headerDecoratorExpression));
+            RelativeDecoratorExpression = relativeDecoratorExpression ?? throw new ArgumentNullException(nameof(relativeDecoratorExpression));
 
             // Value filter : (v) => v.ToString()
             // Column value : (d) => d.v
@@ -44,6 +48,8 @@ namespace SoloX.TableModel.Impl
             AbsoluteDecoratorExpression = absoluteDecoratorExpression;
 
             this.decorator = absoluteDecoratorExpression.Compile();
+
+            this.headerDecorator = headerDecoratorExpression.Compile();
         }
 
         ///<inheritdoc/>
@@ -56,7 +62,16 @@ namespace SoloX.TableModel.Impl
         public Expression<Func<TColumn, TDecorator>> RelativeDecoratorExpression { get; }
 
         ///<inheritdoc/>
+        public Expression<Func<TDecorator>> HeaderDecoratorExpression { get; }
+
+        ///<inheritdoc/>
         public Expression<Func<TData, TDecorator>> AbsoluteDecoratorExpression { get; }
+
+        ///<inheritdoc/>
+        public TDecorator DecorateHeader()
+        {
+            return this.headerDecorator();
+        }
 
         ///<inheritdoc/>
         public TDecorator Decorate(TData data)

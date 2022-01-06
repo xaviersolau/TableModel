@@ -20,5 +20,15 @@ namespace SoloX.TableModel.Options
         /// Get/Set HttpClient
         /// </summary>
         HttpClient HttpClient { get; set; }
+
+        /// <summary>
+        /// Get/Set Http Data Suffix.
+        /// </summary>
+        string HttpDataSuffix { get; set; }
+
+        /// <summary>
+        /// Get/Set Http Count Suffix.
+        /// </summary>
+        string HttpCountSuffix { get; set; }
     }
 }

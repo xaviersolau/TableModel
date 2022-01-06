@@ -70,6 +70,12 @@ namespace SoloX.TableModel.Impl
         }
 
         ///<inheritdoc/>
+        public Task<ITableData<TData>> GetTableDataAsync<TData>()
+        {
+            return GetTableDataAsync<TData>(typeof(TData).FullName);
+        }
+
+        ///<inheritdoc/>
         public Task<IEnumerable<string>> GetTableDataIdsAsync()
         {
             // TODO Add additional Id in case a user manually registered some.

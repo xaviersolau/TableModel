@@ -32,6 +32,11 @@ namespace SoloX.TableModel.Dto
         public string DefaultDecoratorExpression { get; set; }
 
         /// <summary>
+        /// Get/Set the default expression to convert the column header to the target decorator data type.
+        /// </summary>
+        public string DefaultHeaderDecoratorExpression { get; set; }
+
+        /// <summary>
         /// Get/Set the expressions to convert the specified columns data to the target decorator data type.
         /// </summary>
         public IEnumerable<ColumnDecoratorDto> DecoratorColumns { get; set; }

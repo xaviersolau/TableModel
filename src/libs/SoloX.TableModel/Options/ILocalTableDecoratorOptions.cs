@@ -21,8 +21,11 @@ namespace SoloX.TableModel.Options
         /// <summary>
         /// Set the default column decorator.
         /// </summary>
-        /// <param name="defaultDecoratorExpression">Lambda expression to compute decorated value.</param>
+        /// <param name="defaultDecoratorExpression">Default lambda expression to compute decorated value.</param>
+        /// <param name="defaultHeaderDecoratorExpression">Default lambda expression to compute decorated header.</param>
         /// <returns>The current table decorator data options.</returns>
-        ILocalTableDecoratorDataOptions<TData, TDecorator> AddDefault(Expression<Func<object, TDecorator>> defaultDecoratorExpression);
+        ILocalTableDecoratorDataOptions<TData, TDecorator> AddDefault(
+            Expression<Func<object, TDecorator>> defaultDecoratorExpression,
+            Expression<Func<IColumn<TData>, TDecorator>> defaultHeaderDecoratorExpression);
     }
 }

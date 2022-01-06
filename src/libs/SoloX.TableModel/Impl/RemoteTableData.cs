@@ -23,16 +23,32 @@ namespace SoloX.TableModel.Impl
     public class RemoteTableData<TData> : ATableData<TData>
     {
         private readonly HttpClient httpClient;
+        private readonly string httpDataSuffix;
+        private readonly string httpCountSuffix;
 
         /// <summary>
         /// Setup a RemoteTableData with the given HttpClient.
         /// </summary>
         /// <param name="id">Table data Id.</param>
         /// <param name="httpClient">HttpClient to use to get the remote data from.</param>
-        public RemoteTableData(string id, HttpClient httpClient)
+        /// <param name="httpDataSuffix">Url Suffix to use in Http data requests.</param>
+        /// <param name="httpCountSuffix">Url Suffix to use in Http count requests.</param>
+        public RemoteTableData(string id, HttpClient httpClient, string httpDataSuffix, string httpCountSuffix)
             : base(id)
         {
+            if (string.IsNullOrEmpty(httpDataSuffix))
+            {
+                throw new ArgumentNullException(nameof(httpDataSuffix));
+            }
+
+            if (string.IsNullOrEmpty(httpCountSuffix))
+            {
+                throw new ArgumentNullException(nameof(httpCountSuffix));
+            }
+
             this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            this.httpDataSuffix = httpDataSuffix;
+            this.httpCountSuffix = httpCountSuffix;
         }
 
         ///<inheritdoc/>
@@ -117,20 +133,30 @@ namespace SoloX.TableModel.Impl
 
         private async Task<IEnumerable<TData>> SendDataRequestAsync(DataRequestDto request)
         {
-            var response = await this.httpClient.PostAsJsonAsync(Id, request).ConfigureAwait(false);
+            var response = await this.httpClient.PostAsJsonAsync(GetDataRequestUri(), request).ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadFromJsonAsync<IEnumerable<TData>>().ConfigureAwait(false);
         }
 
+        private string GetDataRequestUri()
+        {
+            return $"{Id}/{this.httpDataSuffix}";
+        }
+
         private async Task<int> SendDataCountRequestAsync(DataCountRequestDto request)
         {
-            var response = await this.httpClient.PostAsJsonAsync($"{Id}/Count", request).ConfigureAwait(false);
+            var response = await this.httpClient.PostAsJsonAsync(GetCountRequestUri(), request).ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadFromJsonAsync<int>().ConfigureAwait(false);
+        }
+
+        private string GetCountRequestUri()
+        {
+            return $"{Id}/{this.httpCountSuffix}";
         }
 
         private static DataRequestDto MakeDataRequestDto(ITableSorting<TData>? sorting, ITableFilter<TData>? filter, int? offset, int? pageSize)

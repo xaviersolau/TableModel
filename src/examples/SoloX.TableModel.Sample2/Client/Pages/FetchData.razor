@@ -3,6 +3,7 @@
 @using SoloX.TableModel.Impl
 
 @inject ITableDataRepository TableDataRepository
+@inject ITableStructureRepository TableStructureRepository
 
 <h1>Weather forecast</h1>
 
@@ -27,20 +28,20 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
+                @foreach(var col in tableStructure.Columns)
+                {
+                    @tableDecorator.DecorateHeader(col);
+                }
             </tr>
         </thead>
         <tbody>
             @foreach (var forecast in forecasts)
             {
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
+                    @foreach(var col in tableStructure.Columns)
+                    {
+                        @tableDecorator.Decorate(col, forecast);
+                    }
                 </tr>
             }
         </tbody>
@@ -49,11 +50,15 @@ else
 
 @code {
     private IEnumerable<WeatherForecast> forecasts;
+    private ITableStructure<WeatherForecast> tableStructure;
+    private ITableDecorator<WeatherForecast, MarkupString> tableDecorator;
+
     private string name;
     private int forecastCount;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadStructure();
         await LoadData();
     }
 
@@ -62,15 +67,21 @@ else
         await LoadData();
     }
 
+    private async Task LoadStructure()
+    {
+        tableStructure = await TableStructureRepository.GetTableStructureAsync<WeatherForecast>();
+        tableDecorator = await TableStructureRepository.GetTableDecoratorAsync<WeatherForecast, MarkupString>("Razor");
+    }
+
     private async Task LoadData()
     {
-        var data = await TableDataRepository.GetTableDataAsync<WeatherForecast>("WeatherForecast");
+        var data = await TableDataRepository.GetTableDataAsync<WeatherForecast>();
 
         var tableFilter = new TableFilter<WeatherForecast>();
 
         if (!string.IsNullOrEmpty(this.name))
         {
-            tableFilter.Register(nameof(WeatherForecast.Summary), wf => wf.Summary, v => v.Contains(this.name));
+            tableFilter.Register(wf => wf.Summary, v => v.Contains(this.name));
         }
 
         forecastCount = await data.GetDataCountAsync(tableFilter);

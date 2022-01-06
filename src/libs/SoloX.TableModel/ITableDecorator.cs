@@ -41,6 +41,11 @@ namespace SoloX.TableModel
         ITableStructure<TData> TableStructure { get; }
 
         /// <summary>
+        /// Get the default header decorator expression.
+        /// </summary>
+        Expression<Func<IColumn<TData>, TDecorator>> DefaultHeaderDecoratorExpression { get; }
+
+        /// <summary>
         /// Get the default decorator expression.
         /// </summary>
         Expression<Func<object, TDecorator>> DefaultDecoratorExpression { get; }
@@ -57,5 +62,12 @@ namespace SoloX.TableModel
         /// <param name="data">The data to decorate.</param>
         /// <returns>The decorated table column data.</returns>
         TDecorator Decorate(IColumn<TData> tableColumn, TData data);
+
+        /// <summary>
+        /// Decorate the given column header.
+        /// </summary>
+        /// <param name="tableColumn">The table column to apply the decorator on.</param>
+        /// <returns>The decorated table column header.</returns>
+        TDecorator DecorateHeader(IColumn<TData> tableColumn);
     }
 }

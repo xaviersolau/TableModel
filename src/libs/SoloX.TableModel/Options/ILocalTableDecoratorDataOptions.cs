@@ -23,8 +23,26 @@ namespace SoloX.TableModel.Options
         /// </summary>
         /// <typeparam name="TColumn">Column value type.</typeparam>
         /// <param name="columnId">Column Id.</param>
+        /// <param name="headerDecoratorExpression">Lambda expression to compute decorated header.</param>
         /// <param name="decoratorExpression">Lambda expression to compute decorated value.</param>
         /// <returns>The current table decorator data options.</returns>
-        ILocalTableDecoratorDataOptions<TData, TDecorator> Add<TColumn>(string columnId, Expression<Func<TColumn, TDecorator>> decoratorExpression);
+        ILocalTableDecoratorDataOptions<TData, TDecorator> Add<TColumn>(
+            string columnId,
+            Expression<Func<TColumn, TDecorator>> decoratorExpression,
+            Expression<Func<TDecorator>> headerDecoratorExpression);
+
+        /// <summary>
+        /// Add a new column decorator.
+        /// </summary>
+        /// <typeparam name="TColumn">Column value type.</typeparam>
+        /// <param name="columnPropertyExpression">Column property expression.</param>
+        /// <param name="decoratorExpression">Lambda expression to compute decorated value.</param>
+        /// <param name="headerDecoratorExpression">Lambda expression to compute decorated header.</param>
+        /// <returns>The current table decorator data options.</returns>
+        /// <remarks>Column expression property name is used as column Id.</remarks>
+        ILocalTableDecoratorDataOptions<TData, TDecorator> Add<TColumn>(
+            Expression<Func<TData, TColumn>> columnPropertyExpression,
+            Expression<Func<TColumn, TDecorator>> decoratorExpression,
+            Expression<Func<TDecorator>> headerDecoratorExpression);
     }
 }

@@ -88,6 +88,8 @@ namespace SoloX.TableModel.UTests.Services
             Expression<Func<string, string>> relativeExpression = p => p.ToUpper();
             Expression<Func<Person, string>> columnExpression = p => p.FirstName;
 
+            Expression<Func<string>> headerExpression = () => "FirstName";
+
             var columnMock = new Mock<IColumn<Person, string>>();
             columnMock
                 .SetupGet(x => x.DataGetterExpression)
@@ -97,6 +99,7 @@ namespace SoloX.TableModel.UTests.Services
             {
                 Id = nameof(Person.FirstName),
                 DecoratorExpression = relativeExpression.ToString(),
+                HeaderDecoratorExpression = headerExpression.ToString(),
             };
 
             var service = new DtoToTableModelService();
@@ -113,6 +116,7 @@ namespace SoloX.TableModel.UTests.Services
             };
 
             columnDecorator.Decorate(persone).Should().Be(persone.FirstName.ToUpper());
+            columnDecorator.DecorateHeader().Should().Be("FirstName");
         }
 
         [Fact]
@@ -120,6 +124,9 @@ namespace SoloX.TableModel.UTests.Services
         {
             Expression<Func<object, string>> relativeDefaultExpression = p => p.ToString().ToLower();
             Expression<Func<string, string>> relativeExpression = p => p.ToUpper();
+
+            Expression<Func<IColumn<Person>, string>> defaultHeaderExpression = c => c.Id;
+            Expression<Func<string>> headerExpression = () => "First Name";
 
             var tableStructure = PersonEx.GetTableStructure();
             var column = tableStructure[nameof(Person.FirstName)];
@@ -129,12 +136,14 @@ namespace SoloX.TableModel.UTests.Services
                 Id = "SomeDecoratorId",
                 DecoratorType = typeof(string).AssemblyQualifiedName,
                 DefaultDecoratorExpression = relativeDefaultExpression.ToString(),
+                DefaultHeaderDecoratorExpression = defaultHeaderExpression.ToString(),
                 DecoratorColumns = new ColumnDecoratorDto[]
                 {
                     new ColumnDecoratorDto()
                     {
                         Id = nameof(Person.FirstName),
                         DecoratorExpression = relativeExpression.ToString(),
+                        HeaderDecoratorExpression = headerExpression.ToString(),
                     },
                 }
             };
@@ -161,6 +170,12 @@ namespace SoloX.TableModel.UTests.Services
 
             decorator.Decorate(tableStructure[nameof(Person.LastName)], persone)
                 .Should().Be(persone.LastName.ToLower());
+
+            decorator.DecorateHeader(tableStructure[nameof(Person.LastName)])
+                .Should().Be(nameof(Person.LastName));
+
+            decorator.DecorateHeader(tableStructure[nameof(Person.FirstName)])
+                .Should().Be("First Name");
         }
     }
 #pragma warning restore CA1304 // Spécifier CultureInfo

@@ -130,7 +130,11 @@ namespace SoloX.TableModel.Services.Impl
 
             var defaultDecoratorExpression = expressionParser.Parse<Func<object, TDecorator>>(dto.DefaultDecoratorExpression);
 
-            tableDecorator.RegisterDefault(defaultDecoratorExpression);
+            var headerExpressionParser = new ExpressionParser(new SingleParameterTypeResolver(typeof(IColumn<TData>)));
+
+            var defaultHeaderDecoratorExpression = headerExpressionParser.Parse<Func<IColumn<TData>, TDecorator>>(dto.DefaultHeaderDecoratorExpression);
+
+            tableDecorator.RegisterDefault(defaultDecoratorExpression, defaultHeaderDecoratorExpression);
 
             var methodGeneric = typeof(ColumnDecoratorMapper<TData, TDecorator>).GetMethod(
                 nameof(ColumnDecoratorMapper<TData, TDecorator>.RegisterDecoratorColumn),
@@ -162,7 +166,11 @@ namespace SoloX.TableModel.Services.Impl
 
             var decoratorExpression = expressionParser.Parse<Func<TColumn, TDecorator>>(dto.DecoratorExpression);
 
-            return new ColumnDecorator<TData, TDecorator, TColumn>(column, decoratorExpression);
+            var headerExpressionParser = new ExpressionParser();
+
+            var headerDecoratorExpression = headerExpressionParser.Parse<Func<TDecorator>>(dto.HeaderDecoratorExpression);
+
+            return new ColumnDecorator<TData, TDecorator, TColumn>(column, decoratorExpression, headerDecoratorExpression);
         }
 
         private static class ColumnDecoratorMapper<TData, TDecorator>
