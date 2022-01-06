@@ -64,7 +64,7 @@ namespace SoloX.TableModel.UTests.Services
             columnMock.SetupGet(x => x.Id).Returns(nameof(Person.FirstName));
             columnMock.SetupGet(x => x.DataGetterExpression).Returns(dataExpression);
 
-            var columnDecorator = new ColumnDecorator<Person, string, string>(columnMock.Object, p => p.ToUpper(CultureInfo.InvariantCulture));
+            var columnDecorator = new ColumnDecorator<Person, string, string>(columnMock.Object, p => p.ToUpper(CultureInfo.InvariantCulture), () => "FirstName");
 
             var service = new TableModelToDtoService();
 
@@ -75,6 +75,7 @@ namespace SoloX.TableModel.UTests.Services
             dto.Id.Should().Be(nameof(Person.FirstName));
 
             dto.DecoratorExpression.Should().BeEquivalentTo(columnDecorator.RelativeDecoratorExpression.ToString());
+            dto.HeaderDecoratorExpression.Should().BeEquivalentTo(columnDecorator.HeaderDecoratorExpression.ToString());
         }
 
         [Fact]

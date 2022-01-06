@@ -32,9 +32,9 @@ namespace SoloX.TableModel.UTests.Samples
         {
             var decorator = new TableDecorator<Person, string>("TableDecoratorId", tableStructure);
 
-            decorator.RegisterDefault(v => v.ToString());
-            decorator.Register<string>(nameof(Person.LastName), n => n.ToUpper(CultureInfo.InvariantCulture));
-            decorator.Register<DateTime>(nameof(Person.BirthDate), date => date.ToString("D", CultureInfo.InvariantCulture));
+            decorator.RegisterDefault(v => v.ToString(), c => c.Id);
+            decorator.Register<string>(nameof(Person.LastName), n => n.ToUpper(CultureInfo.InvariantCulture), () => "LastName");
+            decorator.Register<DateTime>(nameof(Person.BirthDate), date => date.ToString("D", CultureInfo.InvariantCulture), () => "BirthDate");
 
             return decorator;
         }

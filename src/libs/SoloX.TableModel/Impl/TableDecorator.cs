@@ -24,6 +24,10 @@ namespace SoloX.TableModel.Impl
         private readonly Dictionary<string, IColumnDecorator<TData, TDecorator>> decoratorExpression = new Dictionary<string, IColumnDecorator<TData, TDecorator>>();
 
         private Func<object, TDecorator>? defaultDecorator;
+        private Func<IColumn<TData>, TDecorator>? defaultHeaderDecorator;
+
+        ///<inheritdoc/>
+        public Expression<Func<IColumn<TData>, TDecorator>>? DefaultHeaderDecoratorExpression { get; private set; }
 
         ///<inheritdoc/>
         public Expression<Func<object, TDecorator>>? DefaultDecoratorExpression { get; private set; }
@@ -51,21 +55,29 @@ namespace SoloX.TableModel.Impl
             Id = id ?? throw new ArgumentNullException(nameof(id));
         }
 
-        ///<inheritdoc/>
-        public void RegisterDefault(Expression<Func<object, TDecorator>> decoratorExpression)
+        /// <summary>
+        /// Register default table decorator.
+        /// </summary>
+        /// <param name="decoratorExpression">Default data decorator expression.</param>
+        /// <param name="headerDecoratorExpression">Default header decorator expression.</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public void RegisterDefault(Expression<Func<object, TDecorator>> decoratorExpression, Expression<Func<IColumn<TData>, TDecorator>> headerDecoratorExpression)
         {
             DefaultDecoratorExpression = decoratorExpression ?? throw new ArgumentNullException(nameof(decoratorExpression));
             this.defaultDecorator = decoratorExpression.Compile();
+
+            DefaultHeaderDecoratorExpression = headerDecoratorExpression ?? throw new ArgumentNullException(nameof(headerDecoratorExpression));
+            this.defaultHeaderDecorator = headerDecoratorExpression.Compile();
         }
 
         ///<inheritdoc/>
-        public void Register<TColumn>(string columnId, Expression<Func<TColumn, TDecorator>> decoratorExpression)
+        public void Register<TColumn>(string columnId, Expression<Func<TColumn, TDecorator>> decoratorExpression, Expression<Func<TDecorator>> headerDecoratorExpression)
         {
             var column = TableStructure[columnId];
 
             if (column is IColumn<TData, TColumn> typedColumn)
             {
-                Register(typedColumn, decoratorExpression);
+                Register(typedColumn, decoratorExpression, headerDecoratorExpression);
             }
             else
             {
@@ -74,9 +86,9 @@ namespace SoloX.TableModel.Impl
         }
 
         ///<inheritdoc/>
-        private void Register<TColumn>(IColumn<TData, TColumn> tableColumn, Expression<Func<TColumn, TDecorator>> relativeDecoratorExpression)
+        private void Register<TColumn>(IColumn<TData, TColumn> tableColumn, Expression<Func<TColumn, TDecorator>> relativeDecoratorExpression, Expression<Func<TDecorator>> headerDecoratorExpression)
         {
-            Register(new ColumnDecorator<TData, TDecorator, TColumn>(tableColumn, relativeDecoratorExpression));
+            Register(new ColumnDecorator<TData, TDecorator, TColumn>(tableColumn, relativeDecoratorExpression, headerDecoratorExpression));
         }
 
         ///<inheritdoc/>
@@ -111,8 +123,25 @@ namespace SoloX.TableModel.Impl
                 return columnDecorator.Decorate(data);
             }
 
-            return this.defaultDecorator != null ? this.defaultDecorator(tableColumn.GetObject(data)) : default;
+            var decoratedValue = this.defaultDecorator != null ? this.defaultDecorator(tableColumn.GetObject(data)) : default;
+            return decoratedValue;
         }
 
+        ///<inheritdoc/>
+        public TDecorator DecorateHeader(IColumn<TData> tableColumn)
+        {
+            if (tableColumn == null)
+            {
+                throw new ArgumentNullException(nameof(tableColumn));
+            }
+
+            if (this.decoratorExpression.TryGetValue(tableColumn.Id, out var columnDecorator))
+            {
+                return columnDecorator.DecorateHeader();
+            }
+
+            var decoratedHeader = this.defaultHeaderDecorator != null ? this.defaultHeaderDecorator(tableColumn) : default;
+            return decoratedHeader;
+        }
     }
 }

@@ -93,6 +93,7 @@ namespace SoloX.TableModel.Services.Impl
 
             return new ColumnDecoratorDto()
             {
+                HeaderDecoratorExpression = columnDecorator.HeaderDecoratorExpression.ToString(),
                 DecoratorExpression = columnDecorator.RelativeDecoratorExpression.ToString(),
                 Id = columnDecorator.Column.Id,
             };
@@ -114,6 +115,7 @@ namespace SoloX.TableModel.Services.Impl
                 DecoratorType = tableDecorator.DecoratorType.AssemblyQualifiedName,
                 DecoratorColumns = tableDecorator.TableColumnDecorators.Select(x => x.Accept(visitor)),
                 DefaultDecoratorExpression = tableDecorator.DefaultDecoratorExpression.ToString(),
+                DefaultHeaderDecoratorExpression = tableDecorator.DefaultHeaderDecoratorExpression.ToString(),
             };
         }
 

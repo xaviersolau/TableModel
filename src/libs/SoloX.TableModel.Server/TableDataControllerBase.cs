@@ -52,7 +52,7 @@ namespace SoloX.TableModel.Server
         /// <param name="id">The table data Id to request.</param>
         /// <param name="request">The data request to run.</param>
         /// <returns>The requested data.</returns>
-        [HttpPost("{id}")]
+        [HttpPost("{id}/data")]
         public async Task<IActionResult> PostDataRequestAsync(string id, [FromBody] DataRequestDto request)
         {
             var tableData = await this.tableDataEndPointService.ProcessDataRequestAsync<object>(id, request).ConfigureAwait(false);
@@ -71,7 +71,7 @@ namespace SoloX.TableModel.Server
         /// <param name="id">The table data Id to request.</param>
         /// <param name="request">The data count request to run.</param>
         /// <returns>The requested data count.</returns>
-        [HttpPost("{id}/Count")]
+        [HttpPost("{id}/count")]
         public async Task<IActionResult> PostDataCountRequestAsync(string id, [FromBody] DataCountRequestDto request)
         {
             var tableData = await this.tableDataEndPointService.ProcessDataCountRequestAsync(id, request).ConfigureAwait(false);

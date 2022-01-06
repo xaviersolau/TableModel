@@ -42,13 +42,9 @@ namespace SoloX.TableModel.Options.Builder.Impl
         }
 
         /// <inheritdoc/>
-        public IMemoryTableDataOptionsBuilder<TData> UseMemoryTableData<TData>(string tableId, Action<IMemoryTableDataOptions<TData>> configAction)
+        public ILocalTableStructureOptionsBuilder<TData, TId> UseTableStructure<TData, TId>(Action<ILocalTableStructureOptions<TData, TId>> configAction)
         {
-            var instanceBuilder = new MemoryTableDataOptionsBuilder<TData>(tableId, configAction);
-
-            this.tableDataOptionsBuilders.Add(instanceBuilder);
-
-            return instanceBuilder;
+            return UseTableStructure<TData, TId>(typeof(TData).FullName, configAction);
         }
 
         /// <inheritdoc/>
@@ -62,6 +58,28 @@ namespace SoloX.TableModel.Options.Builder.Impl
         }
 
         /// <inheritdoc/>
+        public IRemoteTableStructureOptionsBuilder<TData, TId> UseRemoteTableStructure<TData, TId>(Action<IRemoteTableStructureOptions<TData, TId>> configAction)
+        {
+            return UseRemoteTableStructure<TData, TId>(typeof(TData).FullName, configAction);
+        }
+
+        /// <inheritdoc/>
+        public IMemoryTableDataOptionsBuilder<TData> UseMemoryTableData<TData>(string tableId, Action<IMemoryTableDataOptions<TData>> configAction)
+        {
+            var instanceBuilder = new MemoryTableDataOptionsBuilder<TData>(tableId, configAction);
+
+            this.tableDataOptionsBuilders.Add(instanceBuilder);
+
+            return instanceBuilder;
+        }
+
+        /// <inheritdoc/>
+        public IMemoryTableDataOptionsBuilder<TData> UseMemoryTableData<TData>(Action<IMemoryTableDataOptions<TData>> configAction)
+        {
+            return UseMemoryTableData(typeof(TData).FullName, configAction);
+        }
+
+        /// <inheritdoc/>
         public IRemoteTableDataOptionsBuilder<TData> UseRemoteTableData<TData>(string tableId, Action<IRemoteTableDataOptions<TData>> configAction)
         {
             var instanceBuilder = new RemoteTableDataOptionsBuilder<TData>(tableId, configAction);
@@ -69,6 +87,12 @@ namespace SoloX.TableModel.Options.Builder.Impl
             this.tableDataOptionsBuilders.Add(instanceBuilder);
 
             return instanceBuilder;
+        }
+
+        /// <inheritdoc/>
+        public IRemoteTableDataOptionsBuilder<TData> UseRemoteTableData<TData>(Action<IRemoteTableDataOptions<TData>> configAction)
+        {
+            return UseRemoteTableData(typeof(TData).FullName, configAction);
         }
 
         /// <inheritdoc/>
@@ -82,6 +106,12 @@ namespace SoloX.TableModel.Options.Builder.Impl
             this.tableDataOptionsBuilders.Add(instanceBuilder);
 
             return instanceBuilder;
+        }
+
+        /// <inheritdoc/>
+        public IQueryableTableDataOptionsBuilder<TData, TQueryableTableData> UseQueryableTableData<TData, TQueryableTableData>(Action<IQueryableTableDataOptions<TData, TQueryableTableData>> configAction) where TQueryableTableData : ITableData<TData>
+        {
+            return UseQueryableTableData(typeof(TData).FullName, configAction);
         }
 
         internal void Build(TableModelOptions options)
@@ -105,7 +135,6 @@ namespace SoloX.TableModel.Options.Builder.Impl
             }
 
             options.TableDataOptions = dataList;
-
         }
     }
 }

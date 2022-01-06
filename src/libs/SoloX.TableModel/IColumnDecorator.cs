@@ -24,6 +24,11 @@ namespace SoloX.TableModel
         IColumn<TData> Column { get; }
 
         /// <summary>
+        /// Get Lambda expression to get the decorated header.
+        /// </summary>
+        Expression<Func<TDecorator>> HeaderDecoratorExpression { get; }
+
+        /// <summary>
         /// Get Lambda expression to navigate from the table data item to the decorated value.
         /// </summary>
         Expression<Func<TData, TDecorator>> AbsoluteDecoratorExpression { get; }
@@ -31,8 +36,14 @@ namespace SoloX.TableModel
         /// <summary>
         /// Compute the decorated data from the table data item.
         /// </summary>
+        /// <returns>The decorated column header.</returns>
+        TDecorator DecorateHeader();
+
+        /// <summary>
+        /// Compute the decorated data from the table data item.
+        /// </summary>
         /// <param name="data">The table data item to get the decorated value from.</param>
-        /// <returns></returns>
+        /// <returns>The decorated column data.</returns>
         TDecorator Decorate(TData data);
 
         /// <summary>

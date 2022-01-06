@@ -6,6 +6,8 @@
 // </copyright>
 // ----------------------------------------------------------------------
 
+using SoloX.ExpressionTools.Transform;
+using SoloX.ExpressionTools.Transform.Impl.Resolver;
 using SoloX.TableModel.Impl;
 using System;
 using System.Collections.Generic;
@@ -23,6 +25,7 @@ namespace SoloX.TableModel.Options.Impl
     public class LocalTableStructureOptions<TData, TId> : ATableStructureOptions, ILocalTableStructureOptions<TData, TId>, ILocalTableStructureDataOptions<TData, TId>
     {
         private readonly List<IColumn<TData>> dataColumns = new List<IColumn<TData>>();
+        private readonly IPropertyNameResolver propertyNameResolver = new PropertyNameResolver();
 
         /// <summary>
         /// Get Column Id.
@@ -57,11 +60,23 @@ namespace SoloX.TableModel.Options.Impl
         }
 
         /// <inheritdoc/>
+        public ILocalTableStructureDataOptions<TData, TId> AddIdColumn(Expression<Func<TData, TId>> idGetterExpression, bool canSort = true, bool canFilter = true)
+        {
+            return AddIdColumn(this.propertyNameResolver.GetPropertyName(idGetterExpression), idGetterExpression, canSort, canFilter);
+        }
+
+        /// <inheritdoc/>
         public ILocalTableStructureDataOptions<TData, TId> AddColumn<TColumn>(string columnId, Expression<Func<TData, TColumn>> dataGetterExpression, bool canSort, bool canFilter)
         {
             this.dataColumns.Add(new Column<TData, TColumn>(columnId, dataGetterExpression, canSort, canFilter));
 
             return this;
+        }
+
+        /// <inheritdoc/>
+        public ILocalTableStructureDataOptions<TData, TId> AddColumn<TColumn>(Expression<Func<TData, TColumn>> dataGetterExpression, bool canSort = true, bool canFilter = true)
+        {
+            return AddColumn(this.propertyNameResolver.GetPropertyName(dataGetterExpression), dataGetterExpression, canSort, canFilter);
         }
 
         /// <inheritdoc/>

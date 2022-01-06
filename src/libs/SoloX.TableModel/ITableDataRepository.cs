@@ -38,6 +38,14 @@ namespace SoloX.TableModel
         Task<ITableData<TData>> GetTableDataAsync<TData>(string tableId);
 
         /// <summary>
+        /// Get typed table data matching the given table id.
+        /// </summary>
+        /// <typeparam name="TData">Table data type.</typeparam>
+        /// <returns>The matching typed table data.</returns>
+        /// <remarks>TData type name is used as table Id.</remarks>
+        Task<ITableData<TData>> GetTableDataAsync<TData>();
+
+        /// <summary>
         /// Get table data matching the given table id.
         /// </summary>
         /// <param name="tableId">Table id to match.</param>
