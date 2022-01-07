@@ -43,6 +43,16 @@ namespace SoloX.TableModel.Sample2.Server
             services.AddTableModelServer(
                 builder =>
                 {
+                    builder.UseTableStructure<WeatherForecast, DateTime>(
+                        config =>
+                        {
+                            config
+                                .AddIdColumn(f => f.Date, "Date")
+                                .AddColumn(f => f.TemperatureC, "Temp. (C)")
+                                .AddColumn(f => f.TemperatureF, "Temp. (F)")
+                                .AddColumn(f => f.Summary, "Summary");
+                        });
+
                     builder.UseMemoryTableData<WeatherForecast>(
                         config =>
                         {

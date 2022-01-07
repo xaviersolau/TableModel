@@ -81,7 +81,7 @@ else
 
         if (!string.IsNullOrEmpty(this.name))
         {
-            tableFilter.Register(wf => wf.Summary, v => v.Contains(this.name));
+            tableFilter.Register(wf => wf.Summary, v => v.ToLower().Contains(this.name.ToLower()));
         }
 
         forecastCount = await data.GetDataCountAsync(tableFilter);

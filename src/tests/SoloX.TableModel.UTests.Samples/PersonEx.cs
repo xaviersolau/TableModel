@@ -20,7 +20,7 @@ namespace SoloX.TableModel.UTests.Samples
         {
             return new TableStructure<Person, int>(
                 "TableStructureId",
-                new Column<Person, int>(nameof(Person.Id), p => p.Id, false),
+                new Column<Person, int>(nameof(Person.Id), p => p.Id, canSort: false),
                 new Column<Person, string>(nameof(Person.FirstName), p => p.FirstName),
                 new Column<Person, string>(nameof(Person.LastName), p => p.LastName),
                 new Column<Person, string>(nameof(Person.Email), p => p.Email),
@@ -33,8 +33,8 @@ namespace SoloX.TableModel.UTests.Samples
             var decorator = new TableDecorator<Person, string>("TableDecoratorId", tableStructure);
 
             decorator.RegisterDefault(v => v.ToString(), c => c.Id);
-            decorator.Register<string>(nameof(Person.LastName), n => n.ToUpper(CultureInfo.InvariantCulture), () => "LastName");
-            decorator.Register<DateTime>(nameof(Person.BirthDate), date => date.ToString("D", CultureInfo.InvariantCulture), () => "BirthDate");
+            decorator.TryRegister<string>(nameof(Person.LastName), n => n.ToUpper(CultureInfo.InvariantCulture), () => "LastName");
+            decorator.TryRegister<DateTime>(nameof(Person.BirthDate), date => date.ToString("D", CultureInfo.InvariantCulture), () => "BirthDate");
 
             return decorator;
         }

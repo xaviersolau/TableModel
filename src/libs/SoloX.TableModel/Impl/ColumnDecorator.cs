@@ -21,7 +21,7 @@ namespace SoloX.TableModel.Impl
     public class ColumnDecorator<TData, TDecorator, TColumn> : IColumnDecorator<TData, TDecorator, TColumn>
     {
         private readonly Func<TData, TDecorator> decorator;
-        private readonly Func<TDecorator> headerDecorator;
+        private readonly Func<TDecorator>? headerDecorator;
 
         /// <summary>
         /// Setup a ColumnDecorator.
@@ -34,8 +34,9 @@ namespace SoloX.TableModel.Impl
             Expression<Func<TDecorator>> headerDecoratorExpression)
         {
             Column = column ?? throw new ArgumentNullException(nameof(column));
-            HeaderDecoratorExpression = headerDecoratorExpression ?? throw new ArgumentNullException(nameof(headerDecoratorExpression));
             RelativeDecoratorExpression = relativeDecoratorExpression ?? throw new ArgumentNullException(nameof(relativeDecoratorExpression));
+
+            HeaderDecoratorExpression = headerDecoratorExpression;
 
             // Value filter : (v) => v.ToString()
             // Column value : (d) => d.v
@@ -49,7 +50,7 @@ namespace SoloX.TableModel.Impl
 
             this.decorator = absoluteDecoratorExpression.Compile();
 
-            this.headerDecorator = headerDecoratorExpression.Compile();
+            this.headerDecorator = headerDecoratorExpression?.Compile();
         }
 
         ///<inheritdoc/>
@@ -62,15 +63,15 @@ namespace SoloX.TableModel.Impl
         public Expression<Func<TColumn, TDecorator>> RelativeDecoratorExpression { get; }
 
         ///<inheritdoc/>
-        public Expression<Func<TDecorator>> HeaderDecoratorExpression { get; }
+        public Expression<Func<TDecorator>>? HeaderDecoratorExpression { get; }
 
         ///<inheritdoc/>
         public Expression<Func<TData, TDecorator>> AbsoluteDecoratorExpression { get; }
 
         ///<inheritdoc/>
-        public TDecorator DecorateHeader()
+        public TDecorator? DecorateHeader()
         {
-            return this.headerDecorator();
+            return (this.headerDecorator != null) ? this.headerDecorator() : throw new NotSupportedException($"No header decorator expression defined for this column {Column.Id}");
         }
 
         ///<inheritdoc/>

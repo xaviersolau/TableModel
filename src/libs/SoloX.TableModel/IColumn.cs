@@ -23,6 +23,11 @@ namespace SoloX.TableModel
         string Id { get; }
 
         /// <summary>
+        /// Get the column Header.
+        /// </summary>
+        string? Header { get; }
+
+        /// <summary>
         /// Tells if the column data can be sorted.
         /// </summary>
         bool CanSort { get; }

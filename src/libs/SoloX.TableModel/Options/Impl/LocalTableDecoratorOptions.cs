@@ -71,7 +71,10 @@ namespace SoloX.TableModel.Options.Impl
         }
 
         /// <inheritdoc/>
-        public ILocalTableDecoratorDataOptions<TData, TDecorator> Add<TColumn>(string columnId, Expression<Func<TColumn, TDecorator>> decoratorExpression, Expression<Func<TDecorator>> headerDecoratorExpression)
+        public ILocalTableDecoratorDataOptions<TData, TDecorator> Add<TColumn>(
+            string columnId,
+            Expression<Func<TColumn, TDecorator>> decoratorExpression,
+            Expression<Func<TDecorator>>? headerDecoratorExpression)
         {
             if (this.columnDecoratorRegisterActions.ContainsKey(columnId))
             {
@@ -80,7 +83,9 @@ namespace SoloX.TableModel.Options.Impl
 
             this.columnDecoratorRegisterActions.Add(columnId, tableDecorator =>
             {
-                tableDecorator.Register(columnId, decoratorExpression, headerDecoratorExpression);
+                var registered = tableDecorator.TryRegister(columnId, decoratorExpression, headerDecoratorExpression);
+
+                // TODO log warning if not registered.
             });
 
             return this;
@@ -90,7 +95,7 @@ namespace SoloX.TableModel.Options.Impl
         public ILocalTableDecoratorDataOptions<TData, TDecorator> Add<TColumn>(
             Expression<Func<TData, TColumn>> columnPropertyExpression,
             Expression<Func<TColumn, TDecorator>> decoratorExpression,
-            Expression<Func<TDecorator>> headerDecoratorExpression)
+            Expression<Func<TDecorator>>? headerDecoratorExpression)
         {
             var propertyNameResolver = new PropertyNameResolver();
             return Add(propertyNameResolver.GetPropertyName(columnPropertyExpression), decoratorExpression, headerDecoratorExpression);

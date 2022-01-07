@@ -24,20 +24,22 @@ namespace SoloX.TableModel.Options
         /// <typeparam name="TId">Column Id type.</typeparam>
         /// <param name="columnId">Column Id.</param>
         /// <param name="idGetterExpression">Column Id value navigation expression.</param>
+        /// <param name="header">Column header.</param>
         /// <param name="canSort">Tells if it can be sorted.</param>
         /// <param name="canFilter">Tells if it can be filtered.</param>
         /// <returns>The current table structure options.</returns>
-        ILocalTableStructureDataOptions<TData, TId> AddIdColumn(string columnId, Expression<Func<TData, TId>> idGetterExpression, bool canSort = true, bool canFilter = true);
+        ILocalTableStructureDataOptions<TData, TId> AddIdColumn(string columnId, Expression<Func<TData, TId>> idGetterExpression, string? header = null, bool canSort = true, bool canFilter = true);
 
         /// <summary>
         /// Add Id column in table structure.
         /// </summary>
         /// <typeparam name="TId">Column Id type.</typeparam>
         /// <param name="idGetterExpression">Column Id value navigation expression.</param>
+        /// <param name="header">Column header.</param>
         /// <param name="canSort">Tells if it can be sorted.</param>
         /// <param name="canFilter">Tells if it can be filtered.</param>
         /// <returns>The current table structure options.</returns>
         /// <remarks>Expression property name is used as column ID.</remarks>
-        ILocalTableStructureDataOptions<TData, TId> AddIdColumn(Expression<Func<TData, TId>> idGetterExpression, bool canSort = true, bool canFilter = true);
+        ILocalTableStructureDataOptions<TData, TId> AddIdColumn(Expression<Func<TData, TId>> idGetterExpression, string? header = null, bool canSort = true, bool canFilter = true);
     }
 }

@@ -273,6 +273,8 @@ namespace SoloX.TableModel.UTests
             return new ColumnDto()
             {
                 Id = columnId,
+                CanSort = false,
+                CanFilter = false,
                 DataType = typeof(string).AssemblyQualifiedName,
                 DataGetterExpression = dataGetterExp.ToString(),
             };

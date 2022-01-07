@@ -26,7 +26,7 @@ namespace SoloX.TableModel
         /// <summary>
         /// Get Lambda expression to get the decorated header.
         /// </summary>
-        Expression<Func<TDecorator>> HeaderDecoratorExpression { get; }
+        Expression<Func<TDecorator>>? HeaderDecoratorExpression { get; }
 
         /// <summary>
         /// Get Lambda expression to navigate from the table data item to the decorated value.

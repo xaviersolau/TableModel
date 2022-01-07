@@ -82,5 +82,38 @@ namespace SoloX.TableModel.Impl
 
         ///<inheritdoc/>
         public IColumn<TData, TId> IdColumn { get; private set; }
+
+        ///<inheritdoc/>
+        public void Accept(ITableStructureVisitor visitor)
+        {
+            if (visitor == null)
+            {
+                throw new ArgumentNullException(nameof(visitor));
+            }
+
+            visitor.Visit(this);
+        }
+
+        ///<inheritdoc/>
+        public TResult Accept<TResult>(ITableStructureVisitor<TResult> visitor)
+        {
+            if (visitor == null)
+            {
+                throw new ArgumentNullException(nameof(visitor));
+            }
+
+            return visitor.Visit(this);
+        }
+
+        ///<inheritdoc/>
+        public TResult Accept<TResult, TArg>(ITableStructureVisitor<TResult, TArg> visitor, TArg arg)
+        {
+            if (visitor == null)
+            {
+                throw new ArgumentNullException(nameof(visitor));
+            }
+
+            return visitor.Visit(this, arg);
+        }
     }
 }

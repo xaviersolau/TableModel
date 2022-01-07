@@ -8,9 +8,11 @@
 
 using SoloX.ExpressionTools.Parser.Impl;
 using SoloX.ExpressionTools.Parser.Impl.Resolver;
+using SoloX.ExpressionTools.Transform.Impl.Resolver;
 using SoloX.TableModel.Dto;
 using SoloX.TableModel.Impl;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -21,6 +23,19 @@ namespace SoloX.TableModel.Services.Impl
     /// </summary>
     public class DtoToTableModelService : IDtoToTableModelService
     {
+        private static readonly IDictionary<string, Type> BaseType = new Dictionary<string, Type>()
+        {
+            ["string"] = typeof(string),
+            ["char"] = typeof(char),
+            ["long"] = typeof(long),
+            ["int"] = typeof(int),
+            ["short"] = typeof(short),
+            ["byte"] = typeof(byte),
+            ["decimal"] = typeof(decimal),
+            ["double"] = typeof(double),
+            ["float"] = typeof(float),
+        };
+
         /// <inheritdoc/>
         public IColumn<TData> Map<TData>(ColumnDto dto)
         {
@@ -29,7 +44,7 @@ namespace SoloX.TableModel.Services.Impl
                 throw new ArgumentNullException(nameof(dto));
             }
 
-            var columnType = Type.GetType(dto.DataType);
+            var columnType = BaseType.TryGetValue(dto.DataType, out var t) ? t : Type.GetType(dto.DataType);
 
             var methodGeneric = this.GetType().GetMethod(nameof(Map), 2, new[] { typeof(ColumnDto) });
 
@@ -50,7 +65,9 @@ namespace SoloX.TableModel.Services.Impl
 
             var dataGetter = expressionParser.Parse<Func<TData, TColumn>>(dto.DataGetterExpression);
 
-            return new Column<TData, TColumn>(dto.Id, dataGetter, dto.CanSort, dto.CanFilter);
+            var id = dto.Id ?? new PropertyNameResolver().GetPropertyName(dataGetter);
+
+            return new Column<TData, TColumn>(id, dataGetter, dto.Header, dto.CanSort ?? true, dto.CanFilter ?? true);
         }
 
         /// <inheritdoc/>
@@ -147,7 +164,9 @@ namespace SoloX.TableModel.Services.Impl
                     var column = tableStructure[columnDecoratorDto.Id];
                     var method = methodGeneric.MakeGenericMethod(column.DataType);
 
-                    method.Invoke(null, new object[] { columnDecoratorDto, tableDecorator, column, this });
+                    var registered = (bool)method.Invoke(null, new object[] { columnDecoratorDto, tableDecorator, column, this });
+
+                    // TODO log warning if not registered.
                 }
             }
 
@@ -175,10 +194,10 @@ namespace SoloX.TableModel.Services.Impl
 
         private static class ColumnDecoratorMapper<TData, TDecorator>
         {
-            public static void RegisterDecoratorColumn<TColumn>(ColumnDecoratorDto dto, TableDecorator<TData, TDecorator> tableDecorator, IColumn<TData> column, IDtoToTableModelService dtoToTableModelService)
+            public static bool RegisterDecoratorColumn<TColumn>(ColumnDecoratorDto dto, TableDecorator<TData, TDecorator> tableDecorator, IColumn<TData> column, IDtoToTableModelService dtoToTableModelService)
             {
                 var columnDecorator = dtoToTableModelService.Map<TData, TDecorator, TColumn>(dto, (IColumn<TData, TColumn>)column);
-                tableDecorator.Register<TColumn>(columnDecorator);
+                return tableDecorator.TryRegister<TColumn>(columnDecorator);
             }
         }
     }

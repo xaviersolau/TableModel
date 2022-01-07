@@ -29,7 +29,7 @@ namespace SoloX.TableModel.Options
         ILocalTableDecoratorDataOptions<TData, TDecorator> Add<TColumn>(
             string columnId,
             Expression<Func<TColumn, TDecorator>> decoratorExpression,
-            Expression<Func<TDecorator>> headerDecoratorExpression);
+            Expression<Func<TDecorator>>? headerDecoratorExpression = null);
 
         /// <summary>
         /// Add a new column decorator.
@@ -43,6 +43,6 @@ namespace SoloX.TableModel.Options
         ILocalTableDecoratorDataOptions<TData, TDecorator> Add<TColumn>(
             Expression<Func<TData, TColumn>> columnPropertyExpression,
             Expression<Func<TColumn, TDecorator>> decoratorExpression,
-            Expression<Func<TDecorator>> headerDecoratorExpression);
+            Expression<Func<TDecorator>>? headerDecoratorExpression = null);
     }
 }

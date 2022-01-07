@@ -26,23 +26,20 @@ namespace SoloX.TableModel.Sample2.Client
                 tableBuilder =>
                 {
                     tableBuilder
-                        .UseTableStructure<WeatherForecast, DateTime>(
+                        .UseRemoteTableStructure<WeatherForecast, DateTime>(
                             config =>
                             {
-                                config
-                                    .AddIdColumn(f => f.Date)
-                                    .AddColumn(f => f.TemperatureC)
-                                    .AddColumn(f => f.TemperatureF)
-                                    .AddColumn(f => f.Summary);
+                                config.HttpClient = new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress + "api/TableStructure/") };
+                                config.HttpStructureSuffix = "Structure";
                             })
                         .WithDecorator<MarkupString>("Razor",
                             config =>
                             {
-                                config.AddDefault(v => new MarkupString($"<td>{v}</td>"), c => new MarkupString($"<th>{c.Id}</th>"))
-                                    .Add(f => f.Date, v => new MarkupString($"<td>{v.ToShortDateString()}</td>"), () => new MarkupString($"<th>Date</th>"))
-                                    .Add(f => f.TemperatureC, v => new MarkupString($"<td>{v}</td>"), () => new MarkupString($"<th>Temp. (C)</th>"))
-                                    .Add(f => f.TemperatureF, v => new MarkupString($"<td>{v}</td>"), () => new MarkupString($"<th>Temp. (F)</th>"))
-                                    .Add(f => f.Summary, v => new MarkupString($"<td>{v}</td>"), () => new MarkupString($"<th>Summary</th>"));
+                                config.AddDefault(v => new MarkupString($"<td>{v}</td>"), c => new MarkupString($"<th>{c.Header ?? c.Id}</th>"))
+                                    .Add(f => f.Date, v => new MarkupString($"<td>{v.ToShortDateString()}</td>"))
+                                    .Add(f => f.TemperatureC, v => new MarkupString($"<td>{v}</td>"))
+                                    .Add(f => f.TemperatureF, v => new MarkupString($"<td>{v}</td>"))
+                                    .Add(f => f.Summary, v => new MarkupString($"<td>{v}</td>"));
                             });
 
                     tableBuilder.UseRemoteTableData<WeatherForecast>(

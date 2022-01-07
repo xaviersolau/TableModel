@@ -33,6 +33,7 @@ namespace SoloX.TableModel
             services.AddScoped<ITableStructureRepository, TableStructureRepository>();
 
             services.AddSingleton<IDtoToTableModelService, DtoToTableModelService>();
+            services.AddSingleton<ITableModelToDtoService, TableModelToDtoService>();
 
             var tableModelOptionsBuilder = new TableModelOptionsBuilder(setupAction);
 
