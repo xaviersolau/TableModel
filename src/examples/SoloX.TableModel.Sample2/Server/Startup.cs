@@ -57,7 +57,7 @@ namespace SoloX.TableModel.Sample2.Server
                         config =>
                         {
                             var rng = new Random();
-                            var data = Enumerable.Range(1, 50).Select(index => new WeatherForecast
+                            var data = Enumerable.Range(1, 5000).Select(index => new WeatherForecast
                             {
                                 Date = DateTime.Now.AddDays(index),
                                 TemperatureC = rng.Next(-20, 55),

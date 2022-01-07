@@ -9,7 +9,7 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 
-@if (forecasts == null)
+@if (loading)
 {
     <p><em>Loading...</em></p>
 }
@@ -35,23 +35,26 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
-            {
+            <Virtualize ItemsProvider="@GetItems" OverscanCount="50" >
                 <tr>
                     @foreach(var col in tableStructure.Columns)
                     {
-                        @tableDecorator.Decorate(col, forecast);
+                        @tableDecorator.Decorate(col, @context);
                     }
                 </tr>
-            }
+            </Virtualize>
         </tbody>
     </table>
 }
 
 @code {
-    private IEnumerable<WeatherForecast> forecasts;
     private ITableStructure<WeatherForecast> tableStructure;
     private ITableDecorator<WeatherForecast, MarkupString> tableDecorator;
+
+    private ITableData<WeatherForecast> tableData;
+    private ITableFilter<WeatherForecast> tableFilter;
+
+    private bool loading = true;
 
     private string name;
     private int forecastCount;
@@ -75,17 +78,26 @@ else
 
     private async Task LoadData()
     {
-        var data = await TableDataRepository.GetTableDataAsync<WeatherForecast>();
+        loading = true;
 
-        var tableFilter = new TableFilter<WeatherForecast>();
+        tableData = await TableDataRepository.GetTableDataAsync<WeatherForecast>();
+
+        tableFilter = new TableFilter<WeatherForecast>();
 
         if (!string.IsNullOrEmpty(this.name))
         {
             tableFilter.Register(wf => wf.Summary, v => v.ToLower().Contains(this.name.ToLower()));
         }
 
-        forecastCount = await data.GetDataCountAsync(tableFilter);
+        forecastCount = await tableData.GetDataCountAsync(tableFilter);
 
-        forecasts = await data.GetDataAsync(tableFilter);
+        loading = false;
+    }
+
+    private async ValueTask<ItemsProviderResult<WeatherForecast>> GetItems(ItemsProviderRequest request)
+    {
+        var forecasts = await tableData.GetDataPageAsync(tableFilter, request.StartIndex, request.Count);
+
+        return new ItemsProviderResult<WeatherForecast>(forecasts, forecastCount);
     }
 }
