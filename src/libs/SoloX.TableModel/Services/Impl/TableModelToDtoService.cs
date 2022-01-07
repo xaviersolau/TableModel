@@ -41,6 +41,7 @@ namespace SoloX.TableModel.Services.Impl
             return new ColumnDto()
             {
                 Id = column.Id,
+                Header = column.Header,
                 CanSort = column.CanSort,
                 CanFilter = column.CanFilter,
                 DataType = column.DataType.AssemblyQualifiedName,
@@ -138,6 +139,7 @@ namespace SoloX.TableModel.Services.Impl
                 return new ColumnDto()
                 {
                     Id = column.Id,
+                    Header = column.Header,
                     CanSort = column.CanSort,
                     CanFilter = column.CanFilter,
                     DataType = column.DataType.AssemblyQualifiedName,

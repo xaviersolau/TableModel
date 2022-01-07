@@ -47,36 +47,36 @@ namespace SoloX.TableModel.Options.Impl
         { }
 
         /// <inheritdoc/>
-        public ILocalTableStructureDataOptions<TData, TId> AddIdColumn(string columnId, Expression<Func<TData, TId>> idGetterExpression, bool canSort, bool canFilter)
+        public ILocalTableStructureDataOptions<TData, TId> AddIdColumn(string columnId, Expression<Func<TData, TId>> idGetterExpression, string? header, bool canSort, bool canFilter)
         {
             if (IdColumn != null)
             {
                 throw new InvalidDataException("Id column already defined");
             }
 
-            IdColumn = new Column<TData, TId>(columnId, idGetterExpression, canSort, canFilter);
+            IdColumn = new Column<TData, TId>(columnId, idGetterExpression, header, canSort, canFilter);
 
             return this;
         }
 
         /// <inheritdoc/>
-        public ILocalTableStructureDataOptions<TData, TId> AddIdColumn(Expression<Func<TData, TId>> idGetterExpression, bool canSort = true, bool canFilter = true)
+        public ILocalTableStructureDataOptions<TData, TId> AddIdColumn(Expression<Func<TData, TId>> idGetterExpression, string? header, bool canSort, bool canFilter)
         {
-            return AddIdColumn(this.propertyNameResolver.GetPropertyName(idGetterExpression), idGetterExpression, canSort, canFilter);
+            return AddIdColumn(this.propertyNameResolver.GetPropertyName(idGetterExpression), idGetterExpression, header, canSort, canFilter);
         }
 
         /// <inheritdoc/>
-        public ILocalTableStructureDataOptions<TData, TId> AddColumn<TColumn>(string columnId, Expression<Func<TData, TColumn>> dataGetterExpression, bool canSort, bool canFilter)
+        public ILocalTableStructureDataOptions<TData, TId> AddColumn<TColumn>(string columnId, Expression<Func<TData, TColumn>> dataGetterExpression, string? header, bool canSort, bool canFilter)
         {
-            this.dataColumns.Add(new Column<TData, TColumn>(columnId, dataGetterExpression, canSort, canFilter));
+            this.dataColumns.Add(new Column<TData, TColumn>(columnId, dataGetterExpression, header, canSort, canFilter));
 
             return this;
         }
 
         /// <inheritdoc/>
-        public ILocalTableStructureDataOptions<TData, TId> AddColumn<TColumn>(Expression<Func<TData, TColumn>> dataGetterExpression, bool canSort = true, bool canFilter = true)
+        public ILocalTableStructureDataOptions<TData, TId> AddColumn<TColumn>(Expression<Func<TData, TColumn>> dataGetterExpression, string? header, bool canSort = true, bool canFilter = true)
         {
-            return AddColumn(this.propertyNameResolver.GetPropertyName(dataGetterExpression), dataGetterExpression, canSort, canFilter);
+            return AddColumn(this.propertyNameResolver.GetPropertyName(dataGetterExpression), dataGetterExpression, header, canSort, canFilter);
         }
 
         /// <inheritdoc/>

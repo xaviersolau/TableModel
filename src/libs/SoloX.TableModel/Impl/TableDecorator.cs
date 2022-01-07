@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -70,14 +69,27 @@ namespace SoloX.TableModel.Impl
             this.defaultHeaderDecorator = headerDecoratorExpression.Compile();
         }
 
-        ///<inheritdoc/>
-        public void Register<TColumn>(string columnId, Expression<Func<TColumn, TDecorator>> decoratorExpression, Expression<Func<TDecorator>> headerDecoratorExpression)
+        /// <summary>
+        /// Try to register a column decorator.
+        /// </summary>
+        /// <typeparam name="TColumn"></typeparam>
+        /// <param name="columnId"></param>
+        /// <param name="decoratorExpression"></param>
+        /// <param name="headerDecoratorExpression"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public bool TryRegister<TColumn>(string columnId, Expression<Func<TColumn, TDecorator>> decoratorExpression, Expression<Func<TDecorator>> headerDecoratorExpression)
         {
-            var column = TableStructure[columnId];
+            var column = TableStructure.Columns.FirstOrDefault(x => x.Id == columnId);
+
+            if (column == null)
+            {
+                return false;
+            }
 
             if (column is IColumn<TData, TColumn> typedColumn)
             {
-                Register(typedColumn, decoratorExpression, headerDecoratorExpression);
+                return TryRegister(typedColumn, decoratorExpression, headerDecoratorExpression);
             }
             else
             {
@@ -85,14 +97,13 @@ namespace SoloX.TableModel.Impl
             }
         }
 
-        ///<inheritdoc/>
-        private void Register<TColumn>(IColumn<TData, TColumn> tableColumn, Expression<Func<TColumn, TDecorator>> relativeDecoratorExpression, Expression<Func<TDecorator>> headerDecoratorExpression)
+        private bool TryRegister<TColumn>(IColumn<TData, TColumn> tableColumn, Expression<Func<TColumn, TDecorator>> relativeDecoratorExpression, Expression<Func<TDecorator>> headerDecoratorExpression)
         {
-            Register(new ColumnDecorator<TData, TDecorator, TColumn>(tableColumn, relativeDecoratorExpression, headerDecoratorExpression));
+            return TryRegister(new ColumnDecorator<TData, TDecorator, TColumn>(tableColumn, relativeDecoratorExpression, headerDecoratorExpression));
         }
 
         ///<inheritdoc/>
-        public void Register<TColumn>(IColumnDecorator<TData, TDecorator, TColumn> tableColumnDecorator)
+        public bool TryRegister<TColumn>(IColumnDecorator<TData, TDecorator, TColumn> tableColumnDecorator)
         {
             if (tableColumnDecorator == null)
             {
@@ -103,11 +114,11 @@ namespace SoloX.TableModel.Impl
 
             if (matchingColumn == null)
             {
-                throw new InvalidDataException(
-                    $"Table column decorator {tableColumnDecorator.Column.Id} is not compatible with the current table structure {TableStructure.Id}.");
+                return false;
             }
 
             this.decoratorExpression.Add(tableColumnDecorator.Column.Id, tableColumnDecorator);
+            return true;
         }
 
         ///<inheritdoc/>
@@ -123,8 +134,7 @@ namespace SoloX.TableModel.Impl
                 return columnDecorator.Decorate(data);
             }
 
-            var decoratedValue = this.defaultDecorator != null ? this.defaultDecorator(tableColumn.GetObject(data)) : default;
-            return decoratedValue;
+            return this.defaultDecorator != null ? this.defaultDecorator(tableColumn.GetObject(data)) : default;
         }
 
         ///<inheritdoc/>
@@ -137,11 +147,13 @@ namespace SoloX.TableModel.Impl
 
             if (this.decoratorExpression.TryGetValue(tableColumn.Id, out var columnDecorator))
             {
-                return columnDecorator.DecorateHeader();
+                if (columnDecorator.HeaderDecoratorExpression != null)
+                {
+                    return columnDecorator.DecorateHeader();
+                }
             }
 
-            var decoratedHeader = this.defaultHeaderDecorator != null ? this.defaultHeaderDecorator(tableColumn) : default;
-            return decoratedHeader;
+            return this.defaultHeaderDecorator != null ? this.defaultHeaderDecorator(tableColumn) : default;
         }
     }
 }

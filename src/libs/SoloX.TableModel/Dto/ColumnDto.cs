@@ -17,7 +17,12 @@ namespace SoloX.TableModel.Dto
         /// <summary>
         /// Get/Set Column Id.
         /// </summary>
-        public string Id { get; set; }
+        public string? Id { get; set; }
+
+        /// <summary>
+        /// Get/Set Column Header.
+        /// </summary>
+        public string? Header { get; set; }
 
         /// <summary>
         /// Get/Set Column data type.
@@ -27,12 +32,12 @@ namespace SoloX.TableModel.Dto
         /// <summary>
         /// Get/Set CanSort property.
         /// </summary>
-        public bool CanSort { get; set; }
+        public bool? CanSort { get; set; }
 
         /// <summary>
         /// Get/Set CanFilter property.
         /// </summary>
-        public bool CanFilter { get; set; }
+        public bool? CanFilter { get; set; }
 
         /// <summary>
         /// Get/Set the column data getter expression.

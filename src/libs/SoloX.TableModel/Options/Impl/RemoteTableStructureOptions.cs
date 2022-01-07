@@ -27,6 +27,9 @@ namespace SoloX.TableModel.Options.Impl
         /// <inheritdoc/>
         public HttpClient HttpClient { get; set; }
 
+        /// <inheritdoc/>
+        public string HttpStructureSuffix { get; set; } = "structure";
+
         /// <summary>
         /// Setup RemoteTableStructureOptions with Id and decorator options.
         /// </summary>
@@ -41,7 +44,7 @@ namespace SoloX.TableModel.Options.Impl
         {
             var dtoToTableModelService = serviceProvider.GetRequiredService<IDtoToTableModelService>();
 
-            var tableStructureDto = await HttpClient.GetFromJsonAsync<TableStructureDto>(TableStructureId).ConfigureAwait(false);
+            var tableStructureDto = await HttpClient.GetFromJsonAsync<TableStructureDto>($"{TableStructureId}/{HttpStructureSuffix}").ConfigureAwait(false);
 
             return dtoToTableModelService.Map<TData, TId>(tableStructureDto);
         }

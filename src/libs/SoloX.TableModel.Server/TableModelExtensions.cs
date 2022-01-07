@@ -27,6 +27,7 @@ namespace SoloX.TableModel.Server
         public static void AddTableModelServer(this IServiceCollection services, Action<ITableModelOptionsBuilder> setupAction)
         {
             services.AddTransient<ITableDataEndPointService, TableDataEndPointService>();
+            services.AddTransient<ITableStructureEndPointService, TableStructureEndPointService>();
             services.AddTableModel(setupAction);
         }
 

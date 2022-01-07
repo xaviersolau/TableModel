@@ -314,7 +314,7 @@ namespace SoloX.TableModel.UTests
 
             return httpClientBuilder
                 .WithBaseAddress(baseAddressUri)
-                .WithRequest($"{apiTableModel}/{remoteTableStructureId}")
+                .WithRequest($"{apiTableModel}/{remoteTableStructureId}/structure")
                 .RespondingJsonContent(new TableStructureDto()
                 {
                     DataType = typeof(Person).AssemblyQualifiedName,

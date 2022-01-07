@@ -19,6 +19,29 @@ namespace SoloX.TableModel
         /// Get table structure Id.
         /// </summary>
         string Id { get; }
+
+        /// <summary>
+        /// Accept the given visitor and visit the actual typed table structure.
+        /// </summary>
+        /// <param name="visitor">The visitor.</param>
+        void Accept(ITableStructureVisitor visitor);
+
+        /// <summary>
+        /// Accept the given visitor and visit the actual typed table structure to return the typed result.
+        /// </summary>
+        /// <typeparam name="TResult">The resulting type.</typeparam>
+        /// <param name="visitor">The visitor.</param>
+        TResult Accept<TResult>(ITableStructureVisitor<TResult> visitor);
+
+        /// <summary>
+        /// Accept the given visitor and visit the actual typed table structure to return the typed result.
+        /// </summary>
+        /// <typeparam name="TResult">The resulting type.</typeparam>
+        /// <typeparam name="TArg">The typed argument</typeparam>
+        /// <param name="visitor">The visitor.</param>
+        /// <param name="arg">The argument to transmit to the visitor.</param>
+        TResult Accept<TResult, TArg>(ITableStructureVisitor<TResult, TArg> visitor, TArg arg);
+
     }
 
     /// <summary>

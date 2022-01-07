@@ -25,11 +25,13 @@ namespace SoloX.TableModel.Impl
         /// </summary>
         /// <param name="id">Column Id.</param>
         /// <param name="dataGetterExpression">Column data getter expression (From a table data item).</param>
+        /// <param name="header">Column header.</param>
         /// <param name="canSort">Tells if the column can be sorted.</param>
         /// <param name="canFilter">Tells if the column can be filtered.</param>
-        public Column(string id, Expression<Func<TData, TColumn>> dataGetterExpression, bool canSort = true, bool canFilter = true)
+        public Column(string id, Expression<Func<TData, TColumn>> dataGetterExpression, string? header = null, bool canSort = true, bool canFilter = true)
         {
             Id = id;
+            Header = header;
             CanSort = canSort;
             CanFilter = canFilter;
             DataGetterExpression = dataGetterExpression ?? throw new ArgumentNullException(nameof(dataGetterExpression));
@@ -42,6 +44,9 @@ namespace SoloX.TableModel.Impl
 
         ///<inheritdoc/>
         public string Id { get; private set; }
+
+        ///<inheritdoc/>
+        public string? Header { get; private set; }
 
         ///<inheritdoc/>
         public bool CanSort { get; private set; }
