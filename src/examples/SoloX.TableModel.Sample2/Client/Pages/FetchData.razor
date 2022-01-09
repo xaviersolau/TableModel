@@ -9,13 +9,6 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 
-@if (loading)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-
     <EditForm Model="@this" OnValidSubmit="@HandleValidSubmit">
 
         <InputText id="name" @bind-Value="name" />
@@ -23,28 +16,36 @@ else
         <button type="submit">Submit</button>
     </EditForm>
 
+@if (loading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
     <p>Forcast count: @forecastCount</p>
 
-    <table class="table">
-        <thead>
-            <tr>
-                @foreach(var col in tableStructure.Columns)
-                {
-                    @tableDecorator.DecorateHeader(col);
-                }
-            </tr>
-        </thead>
-        <tbody>
-            <Virtualize ItemsProvider="@GetItems" OverscanCount="50" >
+    <div style="overflow:auto; height:800px">
+        <table class="table">
+            <thead>
                 <tr>
                     @foreach(var col in tableStructure.Columns)
                     {
-                        @tableDecorator.Decorate(col, @context);
+                        @tableDecorator.DecorateHeader(col);
                     }
                 </tr>
-            </Virtualize>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <Virtualize ItemsProvider="@GetItems" OverscanCount="50" >
+                    <tr>
+                        @foreach(var col in tableStructure.Columns)
+                        {
+                            @tableDecorator.Decorate(col, @context);
+                        }
+                    </tr>
+                </Virtualize>
+            </tbody>
+        </table>
+    </div>
 }
 
 @code {
@@ -73,14 +74,14 @@ else
     private async Task LoadStructure()
     {
         tableStructure = await TableStructureRepository.GetTableStructureAsync<WeatherForecast>();
-        tableDecorator = await TableStructureRepository.GetTableDecoratorAsync<WeatherForecast, MarkupString>("Razor");
+        tableDecorator = await TableStructureRepository.GetTableDecoratorAsync<WeatherForecast, MarkupString>("HTML");
+
+        tableData = await TableDataRepository.GetTableDataAsync<WeatherForecast>();
     }
 
     private async Task LoadData()
     {
         loading = true;
-
-        tableData = await TableDataRepository.GetTableDataAsync<WeatherForecast>();
 
         tableFilter = new TableFilter<WeatherForecast>();
 
