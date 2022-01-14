@@ -11,6 +11,7 @@ using SoloX.TableModel.Dto;
 using System.Threading.Tasks;
 using SoloX.TableModel.Server.Services;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace SoloX.TableModel.Server
 {
@@ -40,6 +41,7 @@ namespace SoloX.TableModel.Server
         /// </summary>
         /// <returns>The registered table data declarations.</returns>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<TableDataDto>), 200)]
         public async Task<IActionResult> IndexAsync()
         {
             var tables = await this.tableDataEndPointService.GetRegisteredTableDataAsync().ConfigureAwait(false);
@@ -53,6 +55,7 @@ namespace SoloX.TableModel.Server
         /// <param name="request">The data request to run.</param>
         /// <returns>The requested data.</returns>
         [HttpPost("{id}/data")]
+        [ProducesResponseType(typeof(IEnumerable<object>), 200)]
         public async Task<IActionResult> PostDataRequestAsync(string id, [FromBody] DataRequestDto request)
         {
             var tableData = await this.tableDataEndPointService.ProcessDataRequestAsync<object>(id, request).ConfigureAwait(false);
@@ -72,11 +75,12 @@ namespace SoloX.TableModel.Server
         /// <param name="request">The data count request to run.</param>
         /// <returns>The requested data count.</returns>
         [HttpPost("{id}/count")]
+        [ProducesResponseType(typeof(int), 200)]
         public async Task<IActionResult> PostDataCountRequestAsync(string id, [FromBody] DataCountRequestDto request)
         {
-            var tableData = await this.tableDataEndPointService.ProcessDataCountRequestAsync(id, request).ConfigureAwait(false);
+            var tableDataCount = await this.tableDataEndPointService.ProcessDataCountRequestAsync(id, request).ConfigureAwait(false);
 
-            return Ok(tableData);
+            return Ok(tableDataCount);
         }
     }
 }

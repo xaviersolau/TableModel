@@ -22,6 +22,14 @@ namespace SoloX.TableModel.Impl
         /// <summary>
         /// Setup the AQueryableTableData.
         /// </summary>
+        protected AQueryableTableData()
+            : base(typeof(TData).FullName, true)
+        {
+        }
+
+        /// <summary>
+        /// Setup the AQueryableTableData.
+        /// </summary>
         /// <param name="id">Id to identify the table data.</param>
         protected AQueryableTableData(string id)
             : base(id, true)

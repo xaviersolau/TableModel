@@ -9,6 +9,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using SoloX.TableModel.Server.Services;
+using System.Collections.Generic;
+using SoloX.TableModel.Dto;
 
 namespace SoloX.TableModel.Server
 {
@@ -33,6 +35,7 @@ namespace SoloX.TableModel.Server
         /// </summary>
         /// <returns>The registered table structure declarations.</returns>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<string>), 200)]
         public async Task<IActionResult> IndexAsync()
         {
             var tables = await this.tableStructureEndPointService.GetRegisteredTableStructuresAsync().ConfigureAwait(false);
@@ -45,6 +48,7 @@ namespace SoloX.TableModel.Server
         /// <param name="id">The table structure Id to request.</param>
         /// <returns>The requested table structure.</returns>
         [HttpGet("{id}/structure")]
+        [ProducesResponseType(typeof(TableStructureDto), 200)]
         public async Task<IActionResult> GetTableStructureAsync(string id)
         {
             var tableStructure = await this.tableStructureEndPointService.GetTableStructureAsync(id).ConfigureAwait(false);

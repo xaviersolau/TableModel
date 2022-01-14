@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using SoloX.TableModel.Options.Impl;
 
 namespace SoloX.TableModel.Options.Builder.Impl
@@ -93,6 +94,29 @@ namespace SoloX.TableModel.Options.Builder.Impl
         public IRemoteTableDataOptionsBuilder<TData> UseRemoteTableData<TData>(Action<IRemoteTableDataOptions<TData>> configAction)
         {
             return UseRemoteTableData(typeof(TData).FullName, configAction);
+        }
+
+        /// <inheritdoc/>
+        public IQueryableTableDataOptionsBuilder<TData, TQueryableTableData> UseQueryableTableData<TData, TQueryableTableData>(string tableId)
+            where TQueryableTableData : ITableData<TData>
+        {
+            var instanceBuilder = new QueryableTableDataOptionsBuilder<TData, TQueryableTableData>(
+                tableId,
+                config =>
+                {
+                    config.Factory = (_, provider) => provider.GetRequiredService<TQueryableTableData>();
+                });
+
+            this.tableDataOptionsBuilders.Add(instanceBuilder);
+
+            return instanceBuilder;
+        }
+
+        /// <inheritdoc/>
+        public IQueryableTableDataOptionsBuilder<TData, TQueryableTableData> UseQueryableTableData<TData, TQueryableTableData>()
+            where TQueryableTableData : ITableData<TData>
+        {
+            return UseQueryableTableData<TData, TQueryableTableData>(typeof(TData).FullName);
         }
 
         /// <inheritdoc/>

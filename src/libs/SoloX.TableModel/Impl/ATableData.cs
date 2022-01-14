@@ -29,7 +29,7 @@ namespace SoloX.TableModel.Impl
         }
 
         ///<inheritdoc/>
-        public string Id { get; }
+        public string Id { get; internal set; }
 
         ///<inheritdoc/>
         public bool DisableInstanceCaching { get; }

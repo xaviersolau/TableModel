@@ -170,6 +170,61 @@ namespace SoloX.TableModel.UTests
             }).ConfigureAwait(false);
         }
 
+        [Fact]
+        public async Task ItShouldSetupWithoutFactoryServiceCollectionWithQueryableTableData()
+        {
+            await SetupDbContextAndRunTestAsync(async dbContext =>
+            {
+                var services = new ServiceCollection();
+                services.AddTransient(r => dbContext);
+                services.AddTransient<FamilyMemberTableData>();
+
+                services.AddTableModel(builder =>
+                {
+                    builder.UseQueryableTableData<FamilyMemberDto, FamilyMemberTableData>("MyTableId");
+                });
+
+                await using var sp = services.BuildServiceProvider();
+
+                var tableDataRepository = sp.GetService<ITableDataRepository>();
+
+                Assert.NotNull(tableDataRepository);
+
+                var tableData = await tableDataRepository.GetTableDataAsync<FamilyMemberDto>("MyTableId").ConfigureAwait(false);
+
+                Assert.NotNull(tableData);
+                Assert.Equal("MyTableId", tableData.Id);
+            }).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task ItShouldSetupWithoutFactoryWithoutIdServiceCollectionWithQueryableTableData()
+        {
+            await SetupDbContextAndRunTestAsync(async dbContext =>
+            {
+                var services = new ServiceCollection();
+                services.AddTransient(r => dbContext);
+                services.AddTransient<FamilyMemberTableData>();
+
+                services.AddTableModel(builder =>
+                {
+                    builder.UseQueryableTableData<FamilyMemberDto, FamilyMemberTableData>();
+                });
+
+                await using var sp = services.BuildServiceProvider();
+
+                var tableDataRepository = sp.GetService<ITableDataRepository>();
+
+                Assert.NotNull(tableDataRepository);
+
+                var tableData = await tableDataRepository.GetTableDataAsync<FamilyMemberDto>().ConfigureAwait(false);
+
+                Assert.NotNull(tableData);
+                Assert.Equal(typeof(FamilyMemberDto).FullName, tableData.Id);
+                Assert.IsType<FamilyMemberTableData>(tableData);
+            }).ConfigureAwait(false);
+        }
+
         private async Task SetupDbContextAndRunTestAsync(Func<FamilyDbContext, Task> testHandler)
         {
             await using var connection = new SqliteConnection("DataSource=:memory:");
@@ -201,7 +256,13 @@ namespace SoloX.TableModel.UTests
         {
             private readonly FamilyDbContext familyDbContext;
 
-            public FamilyMemberTableData(string id, FamilyDbContext familyDbContext) : base(id)
+            public FamilyMemberTableData(FamilyDbContext familyDbContext)
+            {
+                this.familyDbContext = familyDbContext;
+            }
+
+            public FamilyMemberTableData(string id, FamilyDbContext familyDbContext)
+                : base(id)
             {
                 this.familyDbContext = familyDbContext;
             }
