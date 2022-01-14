@@ -59,6 +59,25 @@ namespace SoloX.TableModel.Options.Builder
         /// </summary>
         /// <typeparam name="TData">Table data type.</typeparam>
         /// <typeparam name="TQueryableTableData">Queriable Table data type.</typeparam>
+        /// <returns>The current table model builder.</returns>
+        IQueryableTableDataOptionsBuilder<TData, TQueryableTableData> UseQueryableTableData<TData, TQueryableTableData>()
+            where TQueryableTableData : ITableData<TData>;
+
+        /// <summary>
+        /// Declare the use of a queriable table data.
+        /// </summary>
+        /// <typeparam name="TData">Table data type.</typeparam>
+        /// <typeparam name="TQueryableTableData">Queriable Table data type.</typeparam>
+        /// <param name="tableId">Table Id.</param>
+        /// <returns>The current table model builder.</returns>
+        IQueryableTableDataOptionsBuilder<TData, TQueryableTableData> UseQueryableTableData<TData, TQueryableTableData>(string tableId)
+            where TQueryableTableData : ITableData<TData>;
+
+        /// <summary>
+        /// Declare the use of a queriable table data.
+        /// </summary>
+        /// <typeparam name="TData">Table data type.</typeparam>
+        /// <typeparam name="TQueryableTableData">Queriable Table data type.</typeparam>
         /// <param name="tableId">Table Id.</param>
         /// <param name="configAction">Setup delegate.</param>
         /// <returns>The current table model builder.</returns>

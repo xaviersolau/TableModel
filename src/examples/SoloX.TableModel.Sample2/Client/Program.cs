@@ -43,7 +43,10 @@ namespace SoloX.TableModel.Sample2.Client
                     tableBuilder.UseRemoteTableData<WeatherForecast>(
                         config =>
                         {
-                            config.HttpClient = new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress + "api/TableData/") };
+                            config.HttpClient = new HttpClient
+                            {
+                                BaseAddress = new Uri(builder.HostEnvironment.BaseAddress + "api/TableData/")
+                            };
                             config.HttpDataSuffix = "Data";
                             config.HttpCountSuffix = "Count";
                         });

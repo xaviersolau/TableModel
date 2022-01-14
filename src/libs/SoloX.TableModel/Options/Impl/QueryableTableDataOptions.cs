@@ -6,6 +6,7 @@
 // </copyright>
 // ----------------------------------------------------------------------
 
+using SoloX.TableModel.Impl;
 using System;
 using System.Threading.Tasks;
 
@@ -34,7 +35,14 @@ namespace SoloX.TableModel.Options.Impl
         public override Task<ITableData> CreateModelInstanceAsync(IServiceProvider serviceProvider)
         {
             var tableData = Factory(TableDataId, serviceProvider);
-            return Task.FromResult<ITableData>(tableData);
+            if (tableData.Id == TableDataId)
+            {
+                return Task.FromResult<ITableData>(tableData);
+            }
+            else
+            {
+                return Task.FromResult<ITableData>(new IdOverrideTableData<TData>(TableDataId, tableData));
+            }
         }
     }
 }
