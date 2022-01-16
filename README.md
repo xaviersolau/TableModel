@@ -214,7 +214,7 @@ Whether or not we are in the server or the client project, the TableData can be 
 Once the table is registered in the services configuration, you just need to inject the `ITableDataRepository`.
 From this repository we can get a `TableData` instance associated to a given data type.
 
-> 
+>
 > Note that creating a TableData instance does not actually load any data. The data will be loaded at query time.
 >
 
@@ -300,3 +300,12 @@ public async Task<IEnumerable<WeatherForecastDto>> LoadFilteredDataAsync(
     var filteredData = weatherForecastTableDate.GetDataAsync(tableFilter);
 }
 ```
+
+>
+> Note that there are limitations using lambda expression in filter: basically you will get the same
+> limitation than the one you have in the underling queriable data implementation. For example if you
+> are using EF Core behind the scene, you will have the same limitations.
+> 
+> In addition it is impossible in the current version to use EF.Functions in your filter expression.
+>
+
