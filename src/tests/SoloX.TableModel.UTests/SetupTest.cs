@@ -26,7 +26,6 @@ namespace SoloX.TableModel.UTests
         [Fact]
         public async Task ItShouldSetupServicesFromLocal()
         {
-
             var services = new ServiceCollection();
 
             services.AddTableModel(
