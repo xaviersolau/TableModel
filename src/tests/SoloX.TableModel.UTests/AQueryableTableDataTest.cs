@@ -19,6 +19,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace SoloX.TableModel.UTests
 {
@@ -141,6 +143,33 @@ namespace SoloX.TableModel.UTests
         }
 
         [Fact]
+        public async Task ItShouldFilterOnGuid()
+        {
+            var guid = new Guid("f45132ed-e1cf-4ddf-b8f9-62e660d2b4cb");
+
+            Expression<Func<Guid?, bool>> filter = d => d == null || d == new Guid("f45132ed-e1cf-4ddf-b8f9-62e660d2b4cb");
+
+            Expression<Func<FamilyMemberDto, Guid?>> data = d => d.SomeGuid;
+
+            await SetupDbContextAndRunTestAsync(async dbContext =>
+            {
+                var tableData = new FamilyMemberTableData("id", dbContext);
+
+                var column = new Column<FamilyMemberDto, Guid?>("col1", data);
+
+                var tableFilter = new TableFilter<FamilyMemberDto>();
+
+                tableFilter.Register(column, filter);
+
+                var result = await tableData.GetDataAsync(tableFilter).ConfigureAwait(false);
+
+                result.Should().NotBeNull();
+
+                result.Select(p => p.FirstName).Should().BeEquivalentTo(dbContext.Persons.Where(p => p.SomeGuid == null || p.SomeGuid == guid).Select(p => p.FirstName));
+            }).ConfigureAwait(false);
+        }
+
+        [Fact]
         public async Task ItShouldSetupServiceCollectionWithQueryableTableData()
         {
             await SetupDbContextAndRunTestAsync(async dbContext =>
@@ -171,7 +200,7 @@ namespace SoloX.TableModel.UTests
         }
 
         [Fact]
-        public async Task ItShouldSetupWithoutFactoryServiceCollectionWithQueryableTableData()
+        public async Task ItShouldSetupServiceCollectionWithQueryableTableDataWithoutFactory()
         {
             await SetupDbContextAndRunTestAsync(async dbContext =>
             {
@@ -198,7 +227,7 @@ namespace SoloX.TableModel.UTests
         }
 
         [Fact]
-        public async Task ItShouldSetupWithoutFactoryWithoutIdServiceCollectionWithQueryableTableData()
+        public async Task ItShouldSetupServiceCollectionWithQueryableTableDataWithoutFactoryWithoutId()
         {
             await SetupDbContextAndRunTestAsync(async dbContext =>
             {
@@ -222,6 +251,45 @@ namespace SoloX.TableModel.UTests
                 Assert.NotNull(tableData);
                 Assert.Equal(typeof(FamilyMemberDto).FullName, tableData.Id);
                 Assert.IsType<FamilyMemberTableData>(tableData);
+            }).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task ItShouldApplyPostProcessing()
+        {
+            await SetupDbContextAndRunTestAsync(async dbContext =>
+            {
+                var tableData = new FamilyMemberTableData("id", dbContext, d =>
+                {
+                    d.FirstName = d.FirstName?.ToUpper(CultureInfo.InvariantCulture);
+                    return d;
+                });
+
+                var result = await tableData.GetDataAsync().ConfigureAwait(false);
+
+                result.Should().NotBeNull();
+
+                result.Select(p => p.FirstName).Should().BeEquivalentTo(dbContext.Persons.Select(p => p.FirstName.ToUpper(CultureInfo.InvariantCulture)));
+
+            }).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task ItShouldApplyPostFiltering()
+        {
+            await SetupDbContextAndRunTestAsync(async dbContext =>
+            {
+                Expression<Func<FamilyMemberDto, bool>> postFiltering = d => d.FamilyName.StartsWith("Do");
+
+                var tableData = new FamilyMemberTableData("id", dbContext, postFiltering);
+
+                var result = await tableData.GetDataAsync().ConfigureAwait(false);
+
+                result.Should().NotBeNull();
+
+                result.Select(p => p.FirstName).Should().BeEquivalentTo(
+                    dbContext.Persons.Where(p => p.Family.Name.StartsWith("Do")).Select(p => p.FirstName));
+
             }).ConfigureAwait(false);
         }
 
@@ -255,6 +323,8 @@ namespace SoloX.TableModel.UTests
         internal class FamilyMemberTableData : AQueryableTableData<FamilyMemberDto>
         {
             private readonly FamilyDbContext familyDbContext;
+            private readonly Func<FamilyMemberDto, FamilyMemberDto> postProcessing;
+            private readonly Expression<Func<FamilyMemberDto, bool>> postFiltering;
 
             public FamilyMemberTableData(FamilyDbContext familyDbContext)
             {
@@ -267,6 +337,30 @@ namespace SoloX.TableModel.UTests
                 this.familyDbContext = familyDbContext;
             }
 
+            public FamilyMemberTableData(string id, FamilyDbContext familyDbContext, Expression<Func<FamilyMemberDto, bool>> postFiltering)
+                : base(id)
+            {
+                this.familyDbContext = familyDbContext;
+                this.postFiltering = postFiltering;
+            }
+
+            public FamilyMemberTableData(string id, FamilyDbContext familyDbContext, Func<FamilyMemberDto, FamilyMemberDto> postProcessing)
+                : base(id)
+            {
+                this.familyDbContext = familyDbContext;
+                this.postProcessing = postProcessing;
+            }
+
+            protected override IQueryable<FamilyMemberDto> ApplyPostFiltering(IQueryable<FamilyMemberDto> data)
+            {
+                return this.postFiltering != null ? data.Where(this.postFiltering) : data;
+            }
+
+            protected override Task<IEnumerable<FamilyMemberDto>> ApplyPostProcessingAsync(IQueryable<FamilyMemberDto> data)
+            {
+                return Task.FromResult<IEnumerable<FamilyMemberDto>>(this.postProcessing != null ? data.Select(this.postProcessing) : data);
+            }
+
             protected override IQueryable<FamilyMemberDto> QueryData()
             {
                 return this.familyDbContext.Persons
@@ -274,6 +368,7 @@ namespace SoloX.TableModel.UTests
                         {
                             FamilyName = p.Family.Name,
                             FirstName = p.FirstName,
+                            SomeGuid = p.SomeGuid,
                         });
             }
         }

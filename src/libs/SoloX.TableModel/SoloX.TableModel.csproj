@@ -11,34 +11,34 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.0" />
     <PackageReference Include="System.Net.Http.Json" Version="3.2.1" />
-    <PackageReference Include="SoloX.ExpressionTools.Parser" Version="1.0.1-alpha.4" />
-    <PackageReference Include="SoloX.ExpressionTools.Transform" Version="1.0.1-alpha.4" />
+    <PackageReference Include="SoloX.ExpressionTools.Parser" Version="1.0.1-alpha.6" />
+    <PackageReference Include="SoloX.ExpressionTools.Transform" Version="1.0.1-alpha.6" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.0" />
     <PackageReference Include="System.Net.Http.Json" Version="3.2.1" />
-    <PackageReference Include="SoloX.ExpressionTools.Parser" Version="1.0.1-alpha.4" />
-    <PackageReference Include="SoloX.ExpressionTools.Transform" Version="1.0.1-alpha.4" />
+    <PackageReference Include="SoloX.ExpressionTools.Parser" Version="1.0.1-alpha.6" />
+    <PackageReference Include="SoloX.ExpressionTools.Transform" Version="1.0.1-alpha.6" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
-    <PackageReference Include="SoloX.ExpressionTools.Parser" Version="1.0.1-alpha.4" />
-    <PackageReference Include="SoloX.ExpressionTools.Transform" Version="1.0.1-alpha.4" />
+    <PackageReference Include="SoloX.ExpressionTools.Parser" Version="1.0.1-alpha.6" />
+    <PackageReference Include="SoloX.ExpressionTools.Transform" Version="1.0.1-alpha.6" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
     <PackageReference Include="SoloX.CodeQuality.Prod" Version="2.0.8">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PrivateAssets>all</PrivateAssets>
+    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
-    <PackageReference Include="SoloX.ExpressionTools.Parser" Version="1.0.1-alpha.4" />
-    <PackageReference Include="SoloX.ExpressionTools.Transform" Version="1.0.1-alpha.4" />
+    <PackageReference Include="SoloX.ExpressionTools.Parser" Version="1.0.1-alpha.6" />
+    <PackageReference Include="SoloX.ExpressionTools.Transform" Version="1.0.1-alpha.6" />
   </ItemGroup>
 
 </Project>

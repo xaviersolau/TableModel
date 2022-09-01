@@ -6,6 +6,7 @@
 // </copyright>
 // ----------------------------------------------------------------------
 
+using SoloX.ExpressionTools.Transform;
 using SoloX.TableModel.Dto;
 using System;
 using System.Collections.Generic;
@@ -203,7 +204,7 @@ namespace SoloX.TableModel.Impl
                     CanSort = column.CanSort,
                     CanFilter = column.CanFilter,
                     DataType = column.DataType.AssemblyQualifiedName,
-                    DataGetterExpression = column.DataGetterExpression.ToString(),
+                    DataGetterExpression = column.DataGetterExpression.Serialize(),
                 };
             }
         }
@@ -222,9 +223,9 @@ namespace SoloX.TableModel.Impl
                         CanSort = column.CanSort,
                         CanFilter = column.CanFilter,
                         DataType = column.DataType.AssemblyQualifiedName,
-                        DataGetterExpression = column.DataGetterExpression.ToString(),
+                        DataGetterExpression = column.DataGetterExpression.Serialize(),
                     },
-                    FilterExpression = columnFilter.Filter.ToString(),
+                    FilterExpression = columnFilter.Filter.Serialize(),
                 };
             }
         }

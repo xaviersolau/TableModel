@@ -12,7 +12,6 @@ namespace SoloX.TableModel.UTests.Samples
 {
     public class Person
     {
-        //public Guid Id { get; set; }
         public int Id { get; set; }
         public string? LastName { get; set; }
         public string? FirstName { get; set; }
@@ -22,6 +21,8 @@ namespace SoloX.TableModel.UTests.Samples
         public DateTime BirthDate { get; set; }
 
         public Family Family { get; set; }
+
+        public Guid? SomeGuid { get; set; }
 
         public static Person[] GetSomePersons()
         {

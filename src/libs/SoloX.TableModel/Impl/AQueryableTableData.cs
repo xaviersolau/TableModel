@@ -41,7 +41,9 @@ namespace SoloX.TableModel.Impl
         {
             var request = QueryData();
 
-            return Task.FromResult<IEnumerable<TData>>(request);
+            request = ApplyPostFiltering(request);
+
+            return ApplyPostProcessingAsync(request);
         }
 
         ///<inheritdoc/>
@@ -61,9 +63,11 @@ namespace SoloX.TableModel.Impl
 
             request = filter.Apply(request);
 
+            request = ApplyPostFiltering(request);
+
             request = sorting.Apply(request);
 
-            return Task.FromResult<IEnumerable<TData>>(request);
+            return ApplyPostProcessingAsync(request);
         }
 
         ///<inheritdoc/>
@@ -78,7 +82,9 @@ namespace SoloX.TableModel.Impl
 
             request = filter.Apply(request);
 
-            return Task.FromResult<IEnumerable<TData>>(request);
+            request = ApplyPostFiltering(request);
+
+            return ApplyPostProcessingAsync(request);
         }
 
         ///<inheritdoc/>
@@ -91,9 +97,11 @@ namespace SoloX.TableModel.Impl
 
             var request = QueryData();
 
+            request = ApplyPostFiltering(request);
+
             request = sorting.Apply(request);
 
-            return Task.FromResult<IEnumerable<TData>>(request);
+            return ApplyPostProcessingAsync(request);
         }
 
         ///<inheritdoc/>
@@ -101,9 +109,11 @@ namespace SoloX.TableModel.Impl
         {
             var request = QueryData();
 
+            request = ApplyPostFiltering(request);
+
             request = request.Skip(offset).Take(pageSize);
 
-            return Task.FromResult<IEnumerable<TData>>(request);
+            return ApplyPostProcessingAsync(request);
         }
 
         ///<inheritdoc/>
@@ -123,11 +133,13 @@ namespace SoloX.TableModel.Impl
 
             request = filter.Apply(request);
 
+            request = ApplyPostFiltering(request);
+
             request = sorting.Apply(request);
 
             request = request.Skip(offset).Take(pageSize);
 
-            return Task.FromResult<IEnumerable<TData>>(request);
+            return ApplyPostProcessingAsync(request);
         }
 
         ///<inheritdoc/>
@@ -142,9 +154,11 @@ namespace SoloX.TableModel.Impl
 
             request = filter.Apply(request);
 
+            request = ApplyPostFiltering(request);
+
             request = request.Skip(offset).Take(pageSize);
 
-            return Task.FromResult<IEnumerable<TData>>(request);
+            return ApplyPostProcessingAsync(request);
         }
 
         ///<inheritdoc/>
@@ -157,17 +171,21 @@ namespace SoloX.TableModel.Impl
 
             var request = QueryData();
 
+            request = ApplyPostFiltering(request);
+
             request = sorting.Apply(request);
 
             request = request.Skip(offset).Take(pageSize);
 
-            return Task.FromResult<IEnumerable<TData>>(request);
+            return ApplyPostProcessingAsync(request);
         }
 
         ///<inheritdoc/>
         public override Task<int> GetDataCountAsync()
         {
             var request = QueryData();
+
+            request = ApplyPostFiltering(request);
 
             return Task.FromResult(request.Count());
         }
@@ -184,6 +202,8 @@ namespace SoloX.TableModel.Impl
 
             request = filter.Apply(request);
 
+            request = ApplyPostFiltering(request);
+
             return Task.FromResult(request.Count());
         }
 
@@ -192,5 +212,23 @@ namespace SoloX.TableModel.Impl
         /// </summary>
         /// <returns>The queryable instance to load the data from.</returns>
         protected abstract IQueryable<TData> QueryData();
+
+        /// <summary>
+        /// Apply an optional post filtering on the data.
+        /// </summary>
+        /// <returns>The post filtered data.</returns>
+        protected virtual IQueryable<TData> ApplyPostFiltering(IQueryable<TData> data)
+        {
+            return data;
+        }
+
+        /// <summary>
+        /// Apply an optional post processing on the data.
+        /// </summary>
+        /// <returns>The post processed data.</returns>
+        protected virtual Task<IEnumerable<TData>> ApplyPostProcessingAsync(IQueryable<TData> data)
+        {
+            return Task.FromResult<IEnumerable<TData>>(data);
+        }
     }
 }

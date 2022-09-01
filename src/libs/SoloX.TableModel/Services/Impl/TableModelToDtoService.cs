@@ -6,6 +6,7 @@
 // </copyright>
 // ----------------------------------------------------------------------
 
+using SoloX.ExpressionTools.Transform;
 using SoloX.TableModel.Dto;
 using System;
 using System.Linq;
@@ -45,7 +46,7 @@ namespace SoloX.TableModel.Services.Impl
                 CanSort = column.CanSort,
                 CanFilter = column.CanFilter,
                 DataType = column.DataType.AssemblyQualifiedName,
-                DataGetterExpression = column.DataGetterExpression.ToString(),
+                DataGetterExpression = column.DataGetterExpression.Serialize(),
             };
         }
 
@@ -94,8 +95,8 @@ namespace SoloX.TableModel.Services.Impl
 
             return new ColumnDecoratorDto()
             {
-                HeaderDecoratorExpression = columnDecorator.HeaderDecoratorExpression.ToString(),
-                DecoratorExpression = columnDecorator.RelativeDecoratorExpression.ToString(),
+                HeaderDecoratorExpression = columnDecorator.HeaderDecoratorExpression.Serialize(),
+                DecoratorExpression = columnDecorator.RelativeDecoratorExpression.Serialize(),
                 Id = columnDecorator.Column.Id,
             };
         }
@@ -115,8 +116,8 @@ namespace SoloX.TableModel.Services.Impl
                 Id = tableDecorator.Id,
                 DecoratorType = tableDecorator.DecoratorType.AssemblyQualifiedName,
                 DecoratorColumns = tableDecorator.TableColumnDecorators.Select(x => x.Accept(visitor)),
-                DefaultDecoratorExpression = tableDecorator.DefaultDecoratorExpression.ToString(),
-                DefaultHeaderDecoratorExpression = tableDecorator.DefaultHeaderDecoratorExpression.ToString(),
+                DefaultDecoratorExpression = tableDecorator.DefaultDecoratorExpression.Serialize(),
+                DefaultHeaderDecoratorExpression = tableDecorator.DefaultHeaderDecoratorExpression.Serialize(),
             };
         }
 
@@ -126,7 +127,7 @@ namespace SoloX.TableModel.Services.Impl
             {
                 return new ColumnDecoratorDto()
                 {
-                    DecoratorExpression = columnDecorator.RelativeDecoratorExpression.ToString(),
+                    DecoratorExpression = columnDecorator.RelativeDecoratorExpression.Serialize(),
                     Id = columnDecorator.Column.Id,
                 };
             }
@@ -143,7 +144,7 @@ namespace SoloX.TableModel.Services.Impl
                     CanSort = column.CanSort,
                     CanFilter = column.CanFilter,
                     DataType = column.DataType.AssemblyQualifiedName,
-                    DataGetterExpression = column.DataGetterExpression.ToString(),
+                    DataGetterExpression = column.DataGetterExpression.Serialize(),
                 };
             }
         }
