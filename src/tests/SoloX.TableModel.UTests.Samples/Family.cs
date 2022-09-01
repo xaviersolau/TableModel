@@ -6,6 +6,7 @@
 // </copyright>
 // ----------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 
 namespace SoloX.TableModel.UTests.Samples
@@ -109,6 +110,7 @@ namespace SoloX.TableModel.UTests.Samples
                             Id = 13,
                             FirstName = "Charisse",
                             LastName = "Dolittle",
+                            SomeGuid = new Guid("f45132ed-e1cf-4ddf-b8f9-62e660d2b4cb")
                         },
                     },
                 },

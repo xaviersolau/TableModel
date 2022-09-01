@@ -6,11 +6,14 @@
 // </copyright>
 // ----------------------------------------------------------------------
 
+using System;
+
 namespace SoloX.TableModel.UTests.Samples
 {
     public class FamilyMemberDto
     {
         public string FamilyName { get; set; }
         public string FirstName { get; set; }
+        public Guid? SomeGuid { get; set; }
     }
 }
