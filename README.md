@@ -27,20 +27,20 @@ You can checkout this Github repository or you can use the NuGet packages:
 
 **Install using the command line from the Package Manager:**
 ```bash
-Install-Package SoloX.TableModel -version 1.0.0-alpha.8
-Install-Package SoloX.TableModel.Server -version 1.0.0-alpha.8
+Install-Package SoloX.TableModel -version 1.0.0-alpha.9
+Install-Package SoloX.TableModel.Server -version 1.0.0-alpha.9
 ```
 
 **Install using the .Net CLI:**
 ```bash
-dotnet add package SoloX.TableModel --version 1.0.0-alpha.8
-dotnet add package SoloX.TableModel.Server --version 1.0.0-alpha.8
+dotnet add package SoloX.TableModel --version 1.0.0-alpha.9
+dotnet add package SoloX.TableModel.Server --version 1.0.0-alpha.9
 ```
 
 **Install editing your project file (csproj):**
 ```xml
-<PackageReference Include="SoloX.TableModel" Version="1.0.0-alpha.8" />
-<PackageReference Include="SoloX.TableModel.Server" Version="1.0.0-alpha.8" />
+<PackageReference Include="SoloX.TableModel" Version="1.0.0-alpha.9" />
+<PackageReference Include="SoloX.TableModel.Server" Version="1.0.0-alpha.9" />
 ```
 
 ## Use case
