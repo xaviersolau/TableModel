@@ -166,6 +166,16 @@ namespace SoloX.TableModel.Impl
             var columnVisitor = new ColumnVisitor();
 
             var filters = filter?.ColumnFilters.Select(f => f.Accept(filterVisitor));
+            var dataFilters = filter?.DataFilters.Select(f => MakeDataFilter(f));
+
+            if (filters == null)
+            {
+                filters = dataFilters;
+            }
+            else if (dataFilters != null)
+            {
+                filters = filters.Concat(dataFilters);
+            }
 
             var sortings = sorting?.ColumnSortings.Select(s => new SortingDto()
             {
@@ -179,6 +189,14 @@ namespace SoloX.TableModel.Impl
                 PageSize = pageSize,
                 Filters = filters,
                 Sortings = sortings,
+            };
+        }
+
+        private static FilterDto MakeDataFilter(IDataFilter<TData> filter)
+        {
+            return new FilterDto()
+            {
+                FilterExpression = filter.DataFilter.Serialize(),
             };
         }
 

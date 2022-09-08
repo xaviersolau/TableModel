@@ -137,7 +137,7 @@ namespace SoloX.TableModel.UTests
         }
 
         [Fact]
-        public async Task ItShouldProvideRemoteFilteredDataCount()
+        public async Task ItShouldProvideRemoteFilteredDataCountUsingColumnFilter()
         {
             var baseAddress = "http://host/api/TableModel";
             var httpClientBuilder = new HttpClientMockBuilder();
@@ -171,7 +171,7 @@ namespace SoloX.TableModel.UTests
 
             var columnMock = SetupColumnMock(columnId, dataGetterExp);
 
-            var filterMock = SetupFilterMock(dataFilterExp, columnMock);
+            var filterMock = SetupColumnFilterMock(dataFilterExp, columnMock);
 
             var resultData = await dataTable.GetDataCountAsync(filterMock.Object);
 
@@ -179,7 +179,7 @@ namespace SoloX.TableModel.UTests
         }
 
         [Fact]
-        public async Task ItShouldProvideRemoteDataFiltered()
+        public async Task ItShouldProvideRemoteDataFilteredUsingColumnFilter()
         {
             var columnId = "columnId";
             var data = new[]
@@ -224,7 +224,7 @@ namespace SoloX.TableModel.UTests
 
             var columnMock = SetupColumnMock(columnId, dataGetterExp);
 
-            var filterMock = SetupFilterMock(dataFilterExp, columnMock);
+            var filterMock = SetupColumnFilterMock(dataFilterExp, columnMock);
 
             var resultData = await dataTable.GetDataPageAsync(filterMock.Object, 1, 2);
 
@@ -235,7 +235,60 @@ namespace SoloX.TableModel.UTests
             });
         }
 
-        private static Mock<ITableFilter<TData>> SetupFilterMock<TData, TColumn>(Expression<Func<TColumn, bool>> dataFilterExp, Mock<IColumn<TData, TColumn>> columnMock)
+        [Fact]
+        public async Task ItShouldProvideRemoteDataFilteredUsingDataFilter()
+        {
+            var data = new[]
+            {
+                "data1",
+                "data2",
+                "data3",
+                "data4",
+                "data5",
+            };
+
+            Expression<Func<string, bool>> dataFilterExp = d => d.Contains("data3");
+
+            var baseAddress = "http://host/api/TableModel";
+            var httpClientBuilder = new HttpClientMockBuilder();
+
+            var httpClient = httpClientBuilder
+                .WithBaseAddress(new Uri(baseAddress))
+                .WithJsonContentRequest<DataRequestDto>($"/api/TableModel/RemotePersonData/Data", HttpMethod.Post)
+                .RespondingJsonContent(
+                    request =>
+                    {
+                        request.Should().NotBeNull();
+
+                        request.Should().BeEquivalentTo(new DataRequestDto()
+                        {
+                            PageSize = 2,
+                            Offset = 1,
+                            Filters = new[]
+                            {
+                                SetupFilterDto(dataFilterExp),
+                            },
+                        });
+
+                        return data.Where(d => d.Contains("data3", StringComparison.Ordinal));
+                    })
+                .Build();
+
+
+            var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient, "Data", "Count");
+
+            var filterMock = SetupDataFilterMock(dataFilterExp);
+
+            var resultData = await dataTable.GetDataPageAsync(filterMock.Object, 1, 2);
+
+            resultData.Should().NotBeNull();
+            resultData.Should().BeEquivalentTo(new[]
+            {
+                "data3",
+            });
+        }
+
+        private static Mock<ITableFilter<TData>> SetupColumnFilterMock<TData, TColumn>(Expression<Func<TColumn, bool>> dataFilterExp, Mock<IColumn<TData, TColumn>> columnMock)
         {
             var columnFilterMock = new Mock<IColumnFilter<TData, TColumn>>();
             columnFilterMock.SetupGet(f => f.Column).Returns(columnMock.Object);
@@ -250,11 +303,31 @@ namespace SoloX.TableModel.UTests
             return filterMock;
         }
 
+        private static Mock<ITableFilter<TData>> SetupDataFilterMock<TData>(Expression<Func<TData, bool>> dataFilterExp)
+        {
+            var dataFilterMock = new Mock<IDataFilter<TData>>();
+            dataFilterMock.SetupGet(f => f.DataFilter).Returns(dataFilterExp);
+
+            var filterMock = new Mock<ITableFilter<TData>>();
+            filterMock.SetupGet(f => f.DataFilters).Returns(new[] {
+                dataFilterMock.Object,
+            });
+            return filterMock;
+        }
+
         private static FilterDto SetupFilterDto<TColumn>(Expression<Func<TColumn, bool>> dataFilterExp, ColumnDto columnDto)
         {
             return new FilterDto()
             {
                 Column = columnDto,
+                FilterExpression = dataFilterExp.ToString(),
+            };
+        }
+
+        private static FilterDto SetupFilterDto<TData>(Expression<Func<TData, bool>> dataFilterExp)
+        {
+            return new FilterDto()
+            {
                 FilterExpression = dataFilterExp.ToString(),
             };
         }

@@ -89,9 +89,20 @@ namespace SoloX.TableModel.Server.Services.Impl
 
                     foreach (var requestFilter in request.Filters)
                     {
-                        var column = this.dtoToTableModelService.Map<TData>(requestFilter.Column);
+                        if (requestFilter.Column != null)
+                        {
+                            var column = this.dtoToTableModelService.Map<TData>(requestFilter.Column);
 
-                        column.Accept(columnVisitor, requestFilter.FilterExpression);
+                            column.Accept(columnVisitor, requestFilter.FilterExpression);
+                        }
+                        else
+                        {
+                            var expressionParser = new ExpressionParser(new SingleParameterTypeResolver(typeof(TData)), new StaticMethodResolver(typeof(string)));
+
+                            var filterExpression = expressionParser.Parse<Func<TData, bool>>(requestFilter.FilterExpression);
+
+                            filter.Register(filterExpression);
+                        }
                     }
                 }
 

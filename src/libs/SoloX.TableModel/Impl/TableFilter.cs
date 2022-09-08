@@ -21,14 +21,23 @@ namespace SoloX.TableModel.Impl
     public class TableFilter<TData> : ITableFilter<TData>
     {
         private readonly List<IColumnFilter<TData>> columnFilters = new List<IColumnFilter<TData>>();
+        private readonly List<IDataFilter<TData>> dataFilters = new List<IDataFilter<TData>>();
 
         ///<inheritdoc/>
         public IEnumerable<IColumnFilter<TData>> ColumnFilters => this.columnFilters;
 
         ///<inheritdoc/>
+        public IEnumerable<IDataFilter<TData>> DataFilters => this.dataFilters;
+
+        ///<inheritdoc/>
         public IQueryable<TData> Apply(IQueryable<TData> data)
         {
             var dataIter = data;
+
+            foreach (var dataFilter in this.dataFilters)
+            {
+                dataIter = dataFilter.Apply(dataIter);
+            }
 
             foreach (var columnFilter in this.columnFilters)
             {
@@ -86,6 +95,12 @@ namespace SoloX.TableModel.Impl
         public void Register<TColumn>(IColumn<TData, TColumn> column, Expression<Func<TColumn, bool>> filter)
         {
             this.columnFilters.Add(new ColumnFilter<TData, TColumn>(column, filter));
+        }
+
+        ///<inheritdoc/>
+        public void Register(Expression<Func<TData, bool>> filter)
+        {
+            this.dataFilters.Add(new DataFilterBase<TData>(filter));
         }
 
         ///<inheritdoc/>
