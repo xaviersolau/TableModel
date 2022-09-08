@@ -19,8 +19,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.0" />
     <PackageReference Include="System.Net.Http.Json" Version="3.2.1" />
-    <PackageReference Include="SoloX.ExpressionTools.Parser" Version="1.0.1-alpha.6" />
-    <PackageReference Include="SoloX.ExpressionTools.Transform" Version="1.0.1-alpha.6" />
+    <PackageReference Include="SoloX.ExpressionTools.Parser" Version="1.0.1-alpha.7" />
+    <PackageReference Include="SoloX.ExpressionTools.Transform" Version="1.0.1-alpha.7" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
