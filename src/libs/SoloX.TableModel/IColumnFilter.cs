@@ -7,7 +7,6 @@
 // ----------------------------------------------------------------------
 
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace SoloX.TableModel
@@ -16,24 +15,12 @@ namespace SoloX.TableModel
     /// Table Column filter interface defining Visitor pattern and basic properties.
     /// </summary>
     /// <typeparam name="TData">Table Data type.</typeparam>
-    public interface IColumnFilter<TData>
+    public interface IColumnFilter<TData> : IDataFilter<TData>
     {
         /// <summary>
         /// Get the associated column declaration.
         /// </summary>
         IColumn<TData> Column { get; }
-
-        /// <summary>
-        /// Apply the filter onto the given table queryable.
-        /// </summary>
-        /// <param name="data">Table item data type.</param>
-        /// <returns>The filtered queryable.</returns>
-        IQueryable<TData> Apply(IQueryable<TData> data);
-
-        /// <summary>
-        /// Lambda expression defining the filter to apply from the table data item.
-        /// </summary>
-        Expression<Func<TData, bool>> DataFilter { get; }
 
         /// <summary>
         /// Accept the given visitor and visit the actual typed column filter.

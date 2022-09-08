@@ -17,7 +17,7 @@ namespace SoloX.TableModel.Dto
         /// <summary>
         /// Get/Set the column to filter.
         /// </summary>
-        public ColumnDto Column { get; set; }
+        public ColumnDto? Column { get; set; }
 
         /// <summary>
         /// Get/Set the filter expression.

@@ -25,6 +25,11 @@ namespace SoloX.TableModel
         IEnumerable<IColumnFilter<TData>> ColumnFilters { get; }
 
         /// <summary>
+        /// Get the data filters.
+        /// </summary>
+        IEnumerable<IDataFilter<TData>> DataFilters { get; }
+
+        /// <summary>
         /// Register a filter column from the given column data expression.
         /// </summary>
         /// <typeparam name="TColumn">Column data type.</typeparam>
@@ -56,6 +61,12 @@ namespace SoloX.TableModel
         /// <param name="column">The column to filter.</param>
         /// <param name="filter">The filter operation expression.</param>
         void Register<TColumn>(IColumn<TData, TColumn> column, Expression<Func<TColumn, bool>> filter);
+
+        /// <summary>
+        /// Register a data filter.
+        /// </summary>
+        /// <param name="filter">The filter operation expression.</param>
+        void Register(Expression<Func<TData, bool>> filter);
 
         /// <summary>
         /// Unregister the column from filters.

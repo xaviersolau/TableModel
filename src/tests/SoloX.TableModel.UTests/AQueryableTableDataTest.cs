@@ -70,7 +70,7 @@ namespace SoloX.TableModel.UTests
         }
 
         [Fact]
-        public async Task ItShouldReturnTheFilteredDate()
+        public async Task ItShouldReturnTheFilteredDateUsingColumnFilter()
         {
             Expression<Func<string, bool>> filter = d => d == "Dolittle";
 
@@ -91,6 +91,30 @@ namespace SoloX.TableModel.UTests
                 result.Should().NotBeNull();
 
                 result.Select(p => p.FirstName).Should().BeEquivalentTo(dbContext.Persons.Where(p => p.Family.Name == "Dolittle").Select(p => p.FirstName));
+            }).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task ItShouldReturnTheFilteredDateUsingDataFilter()
+        {
+            Expression<Func<FamilyMemberDto, bool>> dataFilter = d => d.FamilyName == "Dolittle" && d.FirstName == "Lisa";
+
+            await SetupDbContextAndRunTestAsync(async dbContext =>
+            {
+                var tableData = new FamilyMemberTableData("id", dbContext);
+
+                var tableFilter = new TableFilter<FamilyMemberDto>();
+
+                tableFilter.Register(dataFilter);
+
+                var result = await tableData.GetDataAsync(tableFilter).ConfigureAwait(false);
+
+                result.Should().NotBeNull();
+
+                result.Select(p => p.FirstName).Should().BeEquivalentTo(
+                    dbContext.Persons
+                        .Where(p => p.Family.Name == "Dolittle" && p.FirstName == "Lisa")
+                        .Select(p => p.FirstName));
             }).ConfigureAwait(false);
         }
 

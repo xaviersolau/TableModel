@@ -25,11 +25,10 @@ namespace SoloX.TableModel.Server.UTests
     public class TableDataEndPointServiceTest
     {
         [Fact]
-        public async Task ItShouldGetFilteredDataThoughTheEndPoint()
+        public async Task ItShouldGetFilteredDataThoughTheEndPointUsingColumnFilter()
         {
             Expression<Func<string, bool>> dataFilterExp = d => d.Contains("J");
             Expression<Func<Person, string>> dataGetterExp = d => d.FirstName;
-
 
             var tableId = "id";
             var inMemoryTableData = new InMemoryTableData<Person>(tableId, Person.GetSomePersons());
@@ -41,15 +40,45 @@ namespace SoloX.TableModel.Server.UTests
                 DataGetterExpression = dataGetterExp.ToString(),
             };
 
+            var filterDto = new FilterDto()
+            {
+                Column = columnDto,
+                FilterExpression = dataFilterExp.ToString(),
+            };
+
+            await ProcessGetFilteredDataThoughTheEndPointTest(filterDto, mock =>
+            {
+                mock.Setup(s => s.Map<Person>(columnDto))
+                    .Returns(new Column<Person, string>(columnDto.Id, dataGetterExp));
+            }).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task ItShouldGetFilteredDataThoughTheEndPointUsingDataFilter()
+        {
+            Expression<Func<Person, bool>> dataFilterExp = d => d.FirstName.Contains("J");
+
+            var tableId = "id";
+            var inMemoryTableData = new InMemoryTableData<Person>(tableId, Person.GetSomePersons());
+
+            var filterDto = new FilterDto()
+            {
+                FilterExpression = dataFilterExp.ToString(),
+            };
+
+            await ProcessGetFilteredDataThoughTheEndPointTest(filterDto, mock => { }).ConfigureAwait(false);
+        }
+
+        private static async Task ProcessGetFilteredDataThoughTheEndPointTest(FilterDto filterDto, Action<Mock<IDtoToTableModelService>> setupMock)
+        {
+            var tableId = "id";
+            var inMemoryTableData = new InMemoryTableData<Person>(tableId, Person.GetSomePersons());
+
             var request = new DataRequestDto()
             {
                 Filters = new FilterDto[]
                 {
-                    new FilterDto()
-                    {
-                        Column = columnDto,
-                        FilterExpression = dataFilterExp.ToString(),
-                    },
+                    filterDto,
                 }
             };
 
@@ -58,9 +87,7 @@ namespace SoloX.TableModel.Server.UTests
 
             var dtoToTableModelServiceMock = new Mock<IDtoToTableModelService>();
 
-            dtoToTableModelServiceMock
-                .Setup(s => s.Map<Person>(columnDto))
-                .Returns(new Column<Person, string>(columnDto.Id, dataGetterExp));
+            setupMock(dtoToTableModelServiceMock);
 
             var endPointService = new TableDataEndPointService(repositoryMock.Object, dtoToTableModelServiceMock.Object);
 
