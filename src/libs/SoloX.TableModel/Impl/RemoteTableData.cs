@@ -162,21 +162,9 @@ namespace SoloX.TableModel.Impl
 
         private static DataRequestDto MakeDataRequestDto(ITableSorting<TData>? sorting, ITableFilter<TData>? filter, int? offset, int? pageSize)
         {
-            var filterVisitor = new FilterVisitor();
+            var filters = MakeFiltersDto(filter);
+
             var columnVisitor = new ColumnVisitor();
-
-            var filters = filter?.ColumnFilters.Select(f => f.Accept(filterVisitor));
-            var dataFilters = filter?.DataFilters.Select(f => MakeDataFilter(f));
-
-            if (filters == null)
-            {
-                filters = dataFilters;
-            }
-            else if (dataFilters != null)
-            {
-                filters = filters.Concat(dataFilters);
-            }
-
             var sortings = sorting?.ColumnSortings.Select(s => new SortingDto()
             {
                 Column = s.Column.Accept(columnVisitor),
@@ -192,23 +180,39 @@ namespace SoloX.TableModel.Impl
             };
         }
 
-        private static FilterDto MakeDataFilter(IDataFilter<TData> filter)
-        {
-            return new FilterDto()
-            {
-                FilterExpression = filter.DataFilter.Serialize(),
-            };
-        }
-
         private static DataCountRequestDto MakeDataCountRequestDto(ITableFilter<TData> filter)
         {
-            var filterVisitor = new FilterVisitor();
-
-            var filters = filter?.ColumnFilters.Select(f => f.Accept(filterVisitor));
+            var filters = MakeFiltersDto(filter);
 
             return new DataCountRequestDto()
             {
                 Filters = filters,
+            };
+        }
+
+        private static IEnumerable<FilterDto>? MakeFiltersDto(ITableFilter<TData>? filter)
+        {
+            var filterVisitor = new FilterVisitor();
+            var filters = filter?.ColumnFilters.Select(f => f.Accept(filterVisitor));
+            var dataFilters = filter?.DataFilters.Select(f => MakeDataFilterDto(f));
+
+            if (filters == null)
+            {
+                filters = dataFilters;
+            }
+            else if (dataFilters != null)
+            {
+                filters = filters.Concat(dataFilters);
+            }
+
+            return filters;
+        }
+
+        private static FilterDto MakeDataFilterDto(IDataFilter<TData> filter)
+        {
+            return new FilterDto()
+            {
+                FilterExpression = filter.DataFilter.Serialize(),
             };
         }
 

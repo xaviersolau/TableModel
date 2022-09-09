@@ -139,12 +139,35 @@ namespace SoloX.TableModel.UTests
         [Fact]
         public async Task ItShouldProvideRemoteFilteredDataCountUsingColumnFilter()
         {
-            var baseAddress = "http://host/api/TableModel";
-            var httpClientBuilder = new HttpClientMockBuilder();
-
             var columnId = "columnId";
             Expression<Func<string, bool>> dataFilterExp = d => d.Contains("data3");
             Expression<Func<string, string>> dataGetterExp = d => d;
+
+            var columnMock = SetupColumnMock(columnId, dataGetterExp);
+
+            var filterMock = SetupColumnFilterMock(dataFilterExp, columnMock);
+
+            var filterDto = SetupFilterDto(dataFilterExp, SetupColumnDto(columnId, dataGetterExp));
+
+            await ProvideRemoteFilteredDataCount(filterMock, filterDto).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task ItShouldProvideRemoteFilteredDataCountUsingDataFilter()
+        {
+            Expression<Func<string, bool>> dataFilterExp = d => d.Contains("data3");
+
+            var filterMock = SetupDataFilterMock(dataFilterExp);
+
+            var filterDto = SetupFilterDto(dataFilterExp);
+
+            await ProvideRemoteFilteredDataCount(filterMock, filterDto).ConfigureAwait(false);
+        }
+
+        private static async Task ProvideRemoteFilteredDataCount(Mock<ITableFilter<string>> filterMock, FilterDto filterDto)
+        {
+            var baseAddress = "http://host/api/TableModel";
+            var httpClientBuilder = new HttpClientMockBuilder();
 
             var httpClient = httpClientBuilder
                 .WithBaseAddress(new Uri(baseAddress))
@@ -158,7 +181,7 @@ namespace SoloX.TableModel.UTests
                         {
                             Filters = new[]
                             {
-                                SetupFilterDto(dataFilterExp, SetupColumnDto(columnId, dataGetterExp)),
+                                filterDto
                             },
                         });
 
@@ -169,10 +192,6 @@ namespace SoloX.TableModel.UTests
 
             var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient, "Data", "Count");
 
-            var columnMock = SetupColumnMock(columnId, dataGetterExp);
-
-            var filterMock = SetupColumnFilterMock(dataFilterExp, columnMock);
-
             var resultData = await dataTable.GetDataCountAsync(filterMock.Object);
 
             resultData.Should().Be(6);
@@ -182,72 +201,41 @@ namespace SoloX.TableModel.UTests
         public async Task ItShouldProvideRemoteDataFilteredUsingColumnFilter()
         {
             var columnId = "columnId";
-            var data = new[]
-            {
-                "data1",
-                "data2",
-                "data3",
-                "data4",
-                "data5",
-            };
 
             Expression<Func<string, bool>> dataFilterExp = d => d.Contains("data3");
             Expression<Func<string, string>> dataGetterExp = d => d;
-
-            var baseAddress = "http://host/api/TableModel";
-            var httpClientBuilder = new HttpClientMockBuilder();
-
-            var httpClient = httpClientBuilder
-                .WithBaseAddress(new Uri(baseAddress))
-                .WithJsonContentRequest<DataRequestDto>($"/api/TableModel/RemotePersonData/Data", HttpMethod.Post)
-                .RespondingJsonContent(
-                    request =>
-                    {
-                        request.Should().NotBeNull();
-
-                        request.Should().BeEquivalentTo(new DataRequestDto()
-                        {
-                            PageSize = 2,
-                            Offset = 1,
-                            Filters = new[]
-                            {
-                                SetupFilterDto(dataFilterExp, SetupColumnDto(columnId, dataGetterExp)),
-                            },
-                        });
-
-                        return data.Where(d => d.Contains("data3", StringComparison.Ordinal));
-                    })
-                .Build();
-
-
-            var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient, "Data", "Count");
 
             var columnMock = SetupColumnMock(columnId, dataGetterExp);
 
             var filterMock = SetupColumnFilterMock(dataFilterExp, columnMock);
 
-            var resultData = await dataTable.GetDataPageAsync(filterMock.Object, 1, 2);
+            var filterDto = SetupFilterDto(dataFilterExp, SetupColumnDto(columnId, dataGetterExp));
 
-            resultData.Should().NotBeNull();
-            resultData.Should().BeEquivalentTo(new[]
-            {
-                "data3",
-            });
+            await ProvideRemoteDataFiltered(filterMock, filterDto).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task ItShouldProvideRemoteDataFilteredUsingDataFilter()
         {
+            Expression<Func<string, bool>> dataFilterExp = d => d.Contains("data3");
+
+            var filterMock = SetupDataFilterMock(dataFilterExp);
+
+            var filterDto = SetupFilterDto(dataFilterExp);
+
+            await ProvideRemoteDataFiltered(filterMock, filterDto).ConfigureAwait(false);
+        }
+
+        private static async Task ProvideRemoteDataFiltered(Mock<ITableFilter<string>> filterMock, FilterDto filterDto)
+        {
             var data = new[]
-            {
+                        {
                 "data1",
                 "data2",
                 "data3",
                 "data4",
                 "data5",
             };
-
-            Expression<Func<string, bool>> dataFilterExp = d => d.Contains("data3");
 
             var baseAddress = "http://host/api/TableModel";
             var httpClientBuilder = new HttpClientMockBuilder();
@@ -266,7 +254,7 @@ namespace SoloX.TableModel.UTests
                             Offset = 1,
                             Filters = new[]
                             {
-                                SetupFilterDto(dataFilterExp),
+                                filterDto,
                             },
                         });
 
@@ -276,8 +264,6 @@ namespace SoloX.TableModel.UTests
 
 
             var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient, "Data", "Count");
-
-            var filterMock = SetupDataFilterMock(dataFilterExp);
 
             var resultData = await dataTable.GetDataPageAsync(filterMock.Object, 1, 2);
 
