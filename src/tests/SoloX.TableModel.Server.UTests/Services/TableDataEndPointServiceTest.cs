@@ -46,11 +46,15 @@ namespace SoloX.TableModel.Server.UTests
                 FilterExpression = dataFilterExp.ToString(),
             };
 
-            await ProcessGetFilteredDataThoughTheEndPointTest(filterDto, mock =>
-            {
-                mock.Setup(s => s.Map<Person>(columnDto))
-                    .Returns(new Column<Person, string>(columnDto.Id, dataGetterExp));
-            }).ConfigureAwait(false);
+            await ProcessGetFilteredDataThoughTheEndPointTest(
+                filterDto,
+                mock =>
+                {
+                    mock.Setup(s => s.Map<Person>(columnDto))
+                        .Returns(new Column<Person, string>(columnDto.Id, dataGetterExp));
+                },
+                Person.GetSomePersons().Where(p => p.FirstName.Contains("J", StringComparison.InvariantCulture)))
+                .ConfigureAwait(false);
         }
 
         [Fact]
@@ -66,15 +70,27 @@ namespace SoloX.TableModel.Server.UTests
                 FilterExpression = dataFilterExp.ToString(),
             };
 
-            await ProcessGetFilteredDataThoughTheEndPointTest(filterDto, mock => { }).ConfigureAwait(false);
+            await ProcessGetFilteredDataThoughTheEndPointTest(
+                filterDto,
+                mock => { },
+                Person.GetSomePersons().Where(p => p.FirstName.Contains("J", StringComparison.InvariantCulture)))
+                .ConfigureAwait(false);
         }
 
-        private static async Task ProcessGetFilteredDataThoughTheEndPointTest(FilterDto filterDto, Action<Mock<IDtoToTableModelService>> setupMock)
+        private static async Task ProcessGetFilteredDataThoughTheEndPointTest(FilterDto filterDto, Action<Mock<IDtoToTableModelService>> setupMock, IEnumerable<Person> expectedFirstName)
         {
             var tableId = "id";
             var inMemoryTableData = new InMemoryTableData<Person>(tableId, Person.GetSomePersons());
 
             var request = new DataRequestDto()
+            {
+                Filters = new FilterDto[]
+                {
+                    filterDto,
+                }
+            };
+
+            var requestCount = new DataCountRequestDto()
             {
                 Filters = new FilterDto[]
                 {
@@ -91,13 +107,17 @@ namespace SoloX.TableModel.Server.UTests
 
             var endPointService = new TableDataEndPointService(repositoryMock.Object, dtoToTableModelServiceMock.Object);
 
+            var count = await endPointService.ProcessDataCountRequestAsync(tableId, requestCount);
+
+            count.Should().Be(expectedFirstName.Count());
+
             var data = await endPointService.ProcessDataRequestAsync<object>(tableId, request);
 
             data.Should().NotBeNull();
 
             var result = data.Should().BeAssignableTo<IEnumerable<Person>>().Which;
 
-            result.Should().BeEquivalentTo(Person.GetSomePersons().Where(p => p.FirstName.Contains("J", StringComparison.InvariantCulture)));
+            result.Should().BeEquivalentTo(expectedFirstName);
         }
     }
 }
