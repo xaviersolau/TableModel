@@ -6,7 +6,6 @@
 // </copyright>
 // ----------------------------------------------------------------------
 
-using SoloX.ExpressionTools.Transform;
 using SoloX.ExpressionTools.Transform.Impl;
 using System;
 using System.Linq;
