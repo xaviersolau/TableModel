@@ -19,6 +19,7 @@ using Xunit;
 using SoloX.TableModel.Services;
 using System.Linq;
 using SoloX.TableModel.Server.Services.Impl;
+using Microsoft.Extensions.Logging;
 
 namespace SoloX.TableModel.Server.UTests
 {
@@ -105,7 +106,9 @@ namespace SoloX.TableModel.Server.UTests
 
             setupMock(dtoToTableModelServiceMock);
 
-            var endPointService = new TableDataEndPointService(repositoryMock.Object, dtoToTableModelServiceMock.Object);
+            var loggerMock = new Mock<ILogger<TableDataEndPointService>>();
+
+            var endPointService = new TableDataEndPointService(repositoryMock.Object, dtoToTableModelServiceMock.Object, loggerMock.Object);
 
             var count = await endPointService.ProcessDataCountRequestAsync(tableId, requestCount);
 

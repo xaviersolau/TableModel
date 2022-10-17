@@ -8,37 +8,47 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using SoloX.CodeQuality.Test.Helpers.XUnit;
 using SoloX.TableModel.Server.Services;
 using SoloX.TableModel.UTests.Samples;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace SoloX.TableModel.Server.UTests
 {
     public class SetupTest
     {
+        private readonly ITestOutputHelper testOutputHelper;
+
+        public SetupTest(ITestOutputHelper testOutputHelper)
+        {
+            this.testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public async Task ItShouldSetupTableStructureServerServices()
         {
             var tableId = "LocalPersonTable";
             var services = new ServiceCollection();
-
-            services.AddTableModelServer(
-                builder =>
-                {
-                    builder.UseTableStructure<Person, int>(
-                            tableId,
-                            config =>
-                            {
-                                config
-                                    .AddIdColumn(nameof(Person.Id), p => p.Id)
-                                    .AddColumn(nameof(Person.FirstName), p => p.FirstName)
-                                    .AddColumn(nameof(Person.LastName), p => p.LastName)
-                                    .AddColumn(nameof(Person.Email), p => p.Email)
-                                    .AddColumn(nameof(Person.BirthDate), p => p.BirthDate);
-                            });
-                });
+            services
+                .AddTestLogging(this.testOutputHelper)
+                .AddTableModelServer(
+                    builder =>
+                    {
+                        builder.UseTableStructure<Person, int>(
+                                tableId,
+                                config =>
+                                {
+                                    config
+                                        .AddIdColumn(nameof(Person.Id), p => p.Id)
+                                        .AddColumn(nameof(Person.FirstName), p => p.FirstName)
+                                        .AddColumn(nameof(Person.LastName), p => p.LastName)
+                                        .AddColumn(nameof(Person.Email), p => p.Email)
+                                        .AddColumn(nameof(Person.BirthDate), p => p.BirthDate);
+                                });
+                    });
 
             using var sp = services.BuildServiceProvider();
 
@@ -58,16 +68,18 @@ namespace SoloX.TableModel.Server.UTests
             var tableId = "TableId";
             var services = new ServiceCollection();
 
-            services.AddTableModelServer(
-                builder =>
-                {
-                    builder.UseMemoryTableData<string>(
-                        tableId,
-                        config =>
-                        {
-                            config.AddData(new[] { "Hello" });
-                        });
-                });
+            services
+                .AddTestLogging(this.testOutputHelper)
+                .AddTableModelServer(
+                    builder =>
+                    {
+                        builder.UseMemoryTableData<string>(
+                            tableId,
+                            config =>
+                            {
+                                config.AddData(new[] { "Hello" });
+                            });
+                    });
 
             using var sp = services.BuildServiceProvider();
 
