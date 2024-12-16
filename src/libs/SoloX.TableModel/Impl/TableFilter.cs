@@ -12,6 +12,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#endif
+
 namespace SoloX.TableModel.Impl
 {
     /// <summary>
@@ -50,10 +54,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public void Register<TColumn>(Expression<Func<TData, TColumn>> data, Expression<Func<TColumn, bool>> filter)
         {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
+            ArgumentNullException.ThrowIfNull(data, nameof(data));
 
             var propertyNameResolver = new PropertyNameResolver();
 
@@ -65,10 +66,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public void Register<TColumn>(string columnId, Expression<Func<TData, TColumn>> data, Expression<Func<TColumn, bool>> filter)
         {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
+            ArgumentNullException.ThrowIfNull(data, nameof(data));
 
             Register(new Column<TData, TColumn>(columnId, data), filter);
         }
@@ -76,10 +74,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public void Register<TColumn>(IColumn<TData> column, Expression<Func<TColumn, bool>> filter)
         {
-            if (column == null)
-            {
-                throw new ArgumentNullException(nameof(column));
-            }
+            ArgumentNullException.ThrowIfNull(column, nameof(column));
 
             if (column is IColumn<TData, TColumn> typedColumn)
             {

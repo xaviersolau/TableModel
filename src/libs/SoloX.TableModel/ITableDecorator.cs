@@ -48,7 +48,7 @@ namespace SoloX.TableModel
         /// <summary>
         /// Get the default decorator expression.
         /// </summary>
-        Expression<Func<object, TDecorator>> DefaultDecoratorExpression { get; }
+        Expression<Func<object?, TDecorator>> DefaultDecoratorExpression { get; }
 
         /// <summary>
         /// Get the column decorators.

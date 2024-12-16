@@ -6,12 +6,17 @@
 // </copyright>
 // ----------------------------------------------------------------------
 
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Options;
 using SoloX.TableModel.Options.Impl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#endif
 
 namespace SoloX.TableModel.Impl
 {
@@ -20,7 +25,7 @@ namespace SoloX.TableModel.Impl
     /// </summary>
     public class TableDataRepository : ITableDataRepository
     {
-        private readonly IDictionary<string, ITableData> tableDataMap = new Dictionary<string, ITableData>();
+        private readonly Dictionary<string, ITableData> tableDataMap = new Dictionary<string, ITableData>();
 
         private readonly IDictionary<string, ATableDataOptions> tableDataOptions;
         private readonly IServiceProvider serviceProvider;
@@ -32,15 +37,8 @@ namespace SoloX.TableModel.Impl
         /// <param name="serviceProvider">Dependency injection service provider.</param>
         public TableDataRepository(IOptions<TableModelOptions> options, IServiceProvider serviceProvider)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            if (serviceProvider == null)
-            {
-                throw new ArgumentNullException(nameof(serviceProvider));
-            }
+            ArgumentNullException.ThrowIfNull(options, nameof(options));
+            ArgumentNullException.ThrowIfNull(serviceProvider, nameof(serviceProvider));
 
             this.serviceProvider = serviceProvider;
             this.tableDataOptions = options.Value.TableDataOptions.ToDictionary(x => x.TableDataId);
@@ -92,10 +90,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public void Register<TData>(ITableData<TData> data)
         {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
+            ArgumentNullException.ThrowIfNull(data, nameof(data));
 
             this.tableDataMap.Add(data.Id, data);
         }

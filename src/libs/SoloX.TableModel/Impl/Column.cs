@@ -9,6 +9,10 @@
 using System;
 using System.Linq.Expressions;
 
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#endif
+
 namespace SoloX.TableModel.Impl
 {
     /// <summary>
@@ -30,11 +34,13 @@ namespace SoloX.TableModel.Impl
         /// <param name="canFilter">Tells if the column can be filtered.</param>
         public Column(string id, Expression<Func<TData, TColumn>> dataGetterExpression, string? header = null, bool canSort = true, bool canFilter = true)
         {
+            ArgumentNullException.ThrowIfNull(dataGetterExpression, nameof(dataGetterExpression));
+
             Id = id;
             Header = header;
             CanSort = canSort;
             CanFilter = canFilter;
-            DataGetterExpression = dataGetterExpression ?? throw new ArgumentNullException(nameof(dataGetterExpression));
+            DataGetterExpression = dataGetterExpression;
 
             this.dataGetter = dataGetterExpression.Compile();
         }
@@ -58,7 +64,7 @@ namespace SoloX.TableModel.Impl
         public Expression<Func<TData, TColumn>> DataGetterExpression { get; }
 
         ///<inheritdoc/>
-        public object GetObject(TData data)
+        public object? GetObject(TData data)
         {
             return this.dataGetter(data);
         }
@@ -72,10 +78,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public void Accept(IColumnVisitor<TData> visitor)
         {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
+            ArgumentNullException.ThrowIfNull(visitor, nameof(visitor));
 
             visitor.Visit(this);
         }
@@ -83,10 +86,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public TResult Accept<TResult>(IColumnVisitor<TData, TResult> visitor)
         {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
+            ArgumentNullException.ThrowIfNull(visitor, nameof(visitor));
 
             return visitor.Visit(this);
         }
@@ -94,10 +94,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public TResult Accept<TResult, TArg>(IColumnVisitor<TData, TResult, TArg> visitor, TArg arg)
         {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
+            ArgumentNullException.ThrowIfNull(visitor, nameof(visitor));
 
             return visitor.Visit(this, arg);
         }

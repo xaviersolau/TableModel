@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SoloX.TableModel.Impl
 {
-    internal class IdOverrideTableData<TData> : ITableData<TData>
+    internal sealed class IdOverrideTableData<TData> : ITableData<TData>
     {
         private readonly ITableData<TData> tableData;
         public IdOverrideTableData(string id, ITableData<TData> tableData)

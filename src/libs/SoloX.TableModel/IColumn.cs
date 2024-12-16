@@ -47,7 +47,7 @@ namespace SoloX.TableModel
         /// </summary>
         /// <param name="data">The table data item to get the column data value from.</param>
         /// <returns>The generic column data value.</returns>
-        object GetObject(TData data);
+        object? GetObject(TData data);
 
         /// <summary>
         /// Accept the given visitor and visit the actual typed table column.

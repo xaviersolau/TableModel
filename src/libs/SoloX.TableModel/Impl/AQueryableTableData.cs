@@ -6,10 +6,15 @@
 // </copyright>
 // ----------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#else
+using System;
+#endif
 
 namespace SoloX.TableModel.Impl
 {
@@ -49,15 +54,8 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public override Task<IEnumerable<TData>> GetDataAsync(ITableSorting<TData> sorting, ITableFilter<TData> filter)
         {
-            if (filter == null)
-            {
-                throw new ArgumentNullException(nameof(filter));
-            }
-
-            if (sorting == null)
-            {
-                throw new ArgumentNullException(nameof(sorting));
-            }
+            ArgumentNullException.ThrowIfNull(filter, nameof(filter));
+            ArgumentNullException.ThrowIfNull(sorting, nameof(sorting));
 
             var request = QueryData();
 
@@ -73,10 +71,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public override Task<IEnumerable<TData>> GetDataAsync(ITableFilter<TData> filter)
         {
-            if (filter == null)
-            {
-                throw new ArgumentNullException(nameof(filter));
-            }
+            ArgumentNullException.ThrowIfNull(filter, nameof(filter));
 
             var request = QueryData();
 
@@ -90,10 +85,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public override Task<IEnumerable<TData>> GetDataAsync(ITableSorting<TData> sorting)
         {
-            if (sorting == null)
-            {
-                throw new ArgumentNullException(nameof(sorting));
-            }
+            ArgumentNullException.ThrowIfNull(sorting, nameof(sorting));
 
             var request = QueryData();
 
@@ -119,15 +111,8 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public override Task<IEnumerable<TData>> GetDataPageAsync(ITableSorting<TData> sorting, ITableFilter<TData> filter, int offset, int pageSize)
         {
-            if (filter == null)
-            {
-                throw new ArgumentNullException(nameof(filter));
-            }
-
-            if (sorting == null)
-            {
-                throw new ArgumentNullException(nameof(sorting));
-            }
+            ArgumentNullException.ThrowIfNull(filter, nameof(filter));
+            ArgumentNullException.ThrowIfNull(sorting, nameof(sorting));
 
             var request = QueryData();
 
@@ -145,10 +130,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public override Task<IEnumerable<TData>> GetDataPageAsync(ITableFilter<TData> filter, int offset, int pageSize)
         {
-            if (filter == null)
-            {
-                throw new ArgumentNullException(nameof(filter));
-            }
+            ArgumentNullException.ThrowIfNull(filter, nameof(filter));
 
             var request = QueryData();
 
@@ -164,10 +146,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public override Task<IEnumerable<TData>> GetDataPageAsync(ITableSorting<TData> sorting, int offset, int pageSize)
         {
-            if (sorting == null)
-            {
-                throw new ArgumentNullException(nameof(sorting));
-            }
+            ArgumentNullException.ThrowIfNull(sorting, nameof(sorting));
 
             var request = QueryData();
 
@@ -193,10 +172,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public override Task<int> GetDataCountAsync(ITableFilter<TData> filter)
         {
-            if (filter == null)
-            {
-                throw new ArgumentNullException(nameof(filter));
-            }
+            ArgumentNullException.ThrowIfNull(filter, nameof(filter));
 
             var request = QueryData();
 

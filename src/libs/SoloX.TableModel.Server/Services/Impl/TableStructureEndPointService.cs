@@ -47,7 +47,7 @@ namespace SoloX.TableModel.Server.Services.Impl
             return tableStructure.Accept(new StructureVisitor(this.tableModelToDtoService));
         }
 
-        private class StructureVisitor : ITableStructureVisitor<TableStructureDto>
+        private sealed class StructureVisitor : ITableStructureVisitor<TableStructureDto>
         {
             private readonly ITableModelToDtoService tableModelToDtoService;
 

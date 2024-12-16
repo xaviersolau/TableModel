@@ -138,7 +138,9 @@ namespace SoloX.TableModel.Impl
 
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadFromJsonAsync<IEnumerable<TData>>().ConfigureAwait(false);
+            var data = await response.Content.ReadFromJsonAsync<IEnumerable<TData>>().ConfigureAwait(false);
+
+            return data ?? Array.Empty<TData>();
         }
 
         private string GetDataRequestUri()
@@ -216,7 +218,7 @@ namespace SoloX.TableModel.Impl
             };
         }
 
-        private class ColumnVisitor : IColumnVisitor<TData, ColumnDto>
+        private sealed class ColumnVisitor : IColumnVisitor<TData, ColumnDto>
         {
             public ColumnDto Visit<TColumn>(IColumn<TData, TColumn> column)
             {
@@ -231,7 +233,7 @@ namespace SoloX.TableModel.Impl
             }
         }
 
-        private class FilterVisitor : IColumnFilterVisitor<TData, FilterDto>
+        private sealed class FilterVisitor : IColumnFilterVisitor<TData, FilterDto>
         {
             public FilterDto Visit<TColumn>(IColumnFilter<TData, TColumn> columnFilter)
             {

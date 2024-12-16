@@ -12,6 +12,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#endif
+
 namespace SoloX.TableModel.Impl
 {
     /// <summary>
@@ -41,10 +45,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public void Register<TColumn>(Expression<Func<TData, TColumn>> data, SortingOrder order)
         {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
+            ArgumentNullException.ThrowIfNull(data, nameof(data));
 
             var propertyNameResolver = new PropertyNameResolver();
 
@@ -56,10 +57,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public void Register<TColumn>(string columnId, Expression<Func<TData, TColumn>> data, SortingOrder order)
         {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
+            ArgumentNullException.ThrowIfNull(data, nameof(data));
 
             Register(new Column<TData, TColumn>(columnId, data), order);
         }
@@ -67,10 +65,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public void Register(IColumn<TData> column, SortingOrder order)
         {
-            if (column == null)
-            {
-                throw new ArgumentNullException(nameof(column));
-            }
+            ArgumentNullException.ThrowIfNull(column, nameof(column));
 
             column.Accept(new Visitor(order, this.columnSortings));
         }
@@ -87,7 +82,7 @@ namespace SoloX.TableModel.Impl
             throw new NotImplementedException();
         }
 
-        private class Visitor : IColumnVisitor<TData>
+        private sealed class Visitor : IColumnVisitor<TData>
         {
             private readonly SortingOrder order;
             private readonly List<IColumnSorting<TData>> columnSortings;

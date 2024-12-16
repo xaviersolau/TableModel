@@ -72,7 +72,7 @@ namespace SoloX.TableModel.Server.Services.Impl
             return (IEnumerable<TData>)data;
         }
 
-        private class DataVisitor : ITableDataVisitor<Task<IEnumerable>, DataRequestDto>
+        private sealed class DataVisitor : ITableDataVisitor<Task<IEnumerable>, DataRequestDto>
         {
             private readonly IDtoToTableModelService dtoToTableModelService;
             private readonly ILogger<TableDataEndPointService> logger;
@@ -88,7 +88,7 @@ namespace SoloX.TableModel.Server.Services.Impl
                 var offset = request.Offset;
                 var pageSize = request.PageSize;
 
-                ITableFilter<TData> filter = new TableFilter<TData>();
+                var filter = new TableFilter<TData>();
                 if (request.Filters != null)
                 {
                     var columnVisitor = new ColumnVisitor<TData>(filter, this.logger);
@@ -105,7 +105,7 @@ namespace SoloX.TableModel.Server.Services.Impl
                         {
                             var expressionParser = new ExpressionParser(new SingleParameterTypeResolver(typeof(TData)), new StaticMethodResolver(typeof(string)));
 
-                            this.logger.LogDebug($"Parsing filter: " + requestFilter.FilterExpression);
+                            this.logger.LogDebug("Parsing filter: {FilterExpression}", requestFilter.FilterExpression);
 
                             var filterExpression = expressionParser.Parse<Func<TData, bool>>(requestFilter.FilterExpression);
 
@@ -114,7 +114,7 @@ namespace SoloX.TableModel.Server.Services.Impl
                     }
                 }
 
-                ITableSorting<TData> sorting = new TableSorting<TData>();
+                var sorting = new TableSorting<TData>();
                 if (request.Sortings != null)
                 {
                     foreach (var requestSorting in request.Sortings)
@@ -144,7 +144,7 @@ namespace SoloX.TableModel.Server.Services.Impl
             }
         }
 
-        private class CountVisitor : ITableDataVisitor<Task<int>, DataCountRequestDto>
+        private sealed class CountVisitor : ITableDataVisitor<Task<int>, DataCountRequestDto>
         {
             private readonly IDtoToTableModelService dtoToTableModelService;
             private readonly ILogger<TableDataEndPointService> logger;
@@ -157,7 +157,7 @@ namespace SoloX.TableModel.Server.Services.Impl
 
             public async Task<int> Visit<TData>(ITableData<TData> tableData, DataCountRequestDto request)
             {
-                ITableFilter<TData> filter = new TableFilter<TData>();
+                var filter = new TableFilter<TData>();
                 if (request.Filters != null)
                 {
                     var columnVisitor = new ColumnVisitor<TData>(filter, this.logger);
@@ -174,7 +174,7 @@ namespace SoloX.TableModel.Server.Services.Impl
                         {
                             var expressionParser = new ExpressionParser(new SingleParameterTypeResolver(typeof(TData)), new StaticMethodResolver(typeof(string)));
 
-                            this.logger.LogDebug($"Parsing filter: " + requestFilter.FilterExpression);
+                            this.logger.LogDebug("Parsing filter: {FilterExpression}", requestFilter.FilterExpression);
 
                             var filterExpression = expressionParser.Parse<Func<TData, bool>>(requestFilter.FilterExpression);
 
@@ -189,7 +189,7 @@ namespace SoloX.TableModel.Server.Services.Impl
             }
         }
 
-        private class ColumnVisitor<TData> : IColumnVisitor<TData, object, string>
+        private sealed class ColumnVisitor<TData> : IColumnVisitor<TData, object, string>
         {
             private readonly ITableFilter<TData> tableFilter;
             private readonly ILogger<TableDataEndPointService> logger;
@@ -204,13 +204,13 @@ namespace SoloX.TableModel.Server.Services.Impl
             {
                 var expressionParser = new ExpressionParser(new SingleParameterTypeResolver(typeof(TColumn)), new StaticMethodResolver(typeof(string)));
 
-                this.logger.LogDebug($"Parsing filter: " + filter);
+                this.logger.LogDebug("Parsing filter: {Filter}", filter);
 
                 var filterExpression = expressionParser.Parse<Func<TColumn, bool>>(filter);
 
                 this.tableFilter.Register(column, filterExpression);
 
-                return null;
+                return default!;
             }
         }
     }
