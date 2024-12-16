@@ -192,7 +192,7 @@ namespace SoloX.TableModel.UTests
 
             var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient, "Data", "Count");
 
-            var resultData = await dataTable.GetDataCountAsync(filterMock.Object);
+            var resultData = await dataTable.GetDataCountAsync(filterMock.Object).ConfigureAwait(false);
 
             resultData.Should().Be(6);
         }
@@ -265,7 +265,7 @@ namespace SoloX.TableModel.UTests
 
             var dataTable = new RemoteTableData<string>("RemotePersonData", httpClient, "Data", "Count");
 
-            var resultData = await dataTable.GetDataPageAsync(filterMock.Object, 1, 2);
+            var resultData = await dataTable.GetDataPageAsync(filterMock.Object, 1, 2).ConfigureAwait(false);
 
             resultData.Should().NotBeNull();
             resultData.Should().BeEquivalentTo(

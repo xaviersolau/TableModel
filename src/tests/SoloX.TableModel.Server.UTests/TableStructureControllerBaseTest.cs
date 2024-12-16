@@ -63,7 +63,7 @@ namespace SoloX.TableModel.Server.UTests
             okResult.Value.Should().BeEquivalentTo(strDto);
         }
 
-        private class TableStructureController : TableStructureControllerBase
+        private sealed class TableStructureController : TableStructureControllerBase
         {
             public TableStructureController(ITableStructureEndPointService tableStructureEndPointService)
                 : base(tableStructureEndPointService)
