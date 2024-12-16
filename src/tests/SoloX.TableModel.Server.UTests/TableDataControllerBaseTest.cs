@@ -44,7 +44,7 @@ namespace SoloX.TableModel.Server.UTests
             okResult.Value.Should().BeEquivalentTo(tableDataList);
         }
 
-        private class TableDataController : TableDataControllerBase
+        private sealed class TableDataController : TableDataControllerBase
         {
             public TableDataController(ITableDataEndPointService tableDataEndPointService)
                 : base(tableDataEndPointService)

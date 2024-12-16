@@ -2,15 +2,15 @@
 <RunSettings>
   <DataCollectionRunSettings>
     <DataCollectors>
-      <DataCollector friendlyName="XPlat code coverage">
+      <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
-          <Format>lcov</Format>
+          <Format>cobertura</Format>
           <SingleHit>false</SingleHit>
-          <UseSourceLink>true</UseSourceLink>
-          <Exclude>[*.UTests.Samples]*</Exclude>
+          <UseSourceLink>false</UseSourceLink>
           <IncludeTestAssembly>false</IncludeTestAssembly>
           <SkipAutoProps>true</SkipAutoProps>
-          <DeterministicReport>false</DeterministicReport>
+          <DeterministicReport>true</DeterministicReport>
+          <Exclude>[*.UTests.Samples]*</Exclude>
         </Configuration>
       </DataCollector>
     </DataCollectors>

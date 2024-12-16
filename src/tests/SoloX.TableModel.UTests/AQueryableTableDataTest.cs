@@ -45,7 +45,7 @@ namespace SoloX.TableModel.UTests
                 result.Should().NotBeNull();
 
                 result.Select(p => p.FirstName).Should().BeEquivalentTo(dbContext.Persons.Select(p => p.FirstName));
-            }).ConfigureAwait(false);
+            });
         }
 
         [Theory]
@@ -66,7 +66,7 @@ namespace SoloX.TableModel.UTests
 
                 result.Select(p => p.FirstName).Should().BeEquivalentTo(
                     dbContext.Persons.Skip(offset).Take(size).Select(p => p.FirstName));
-            }).ConfigureAwait(false);
+            });
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace SoloX.TableModel.UTests
                 result.Should().NotBeNull();
 
                 result.Select(p => p.FirstName).Should().BeEquivalentTo(dbContext.Persons.Where(p => p.Family.Name == "Dolittle").Select(p => p.FirstName));
-            }).ConfigureAwait(false);
+            });
         }
 
         [Fact]
@@ -115,7 +115,7 @@ namespace SoloX.TableModel.UTests
                     dbContext.Persons
                         .Where(p => p.Family.Name == "Dolittle" && p.FirstName == "Lisa")
                         .Select(p => p.FirstName));
-            }).ConfigureAwait(false);
+            });
         }
 
         [Fact]
@@ -140,7 +140,7 @@ namespace SoloX.TableModel.UTests
                 result.Should().NotBeNull();
 
                 result.Select(p => p.FirstName).Should().BeEquivalentTo(dbContext.Persons.Where(p => p.FirstName.Contains("an")).Select(p => p.FirstName));
-            }).ConfigureAwait(false);
+            });
         }
 
         [Fact]
@@ -163,7 +163,7 @@ namespace SoloX.TableModel.UTests
                 result.Should().NotBeNull();
 
                 result.Select(p => p.FirstName).Should().BeEquivalentTo(dbContext.Persons.OrderByDescending(p => p.FirstName).Select(p => p.FirstName));
-            }).ConfigureAwait(false);
+            });
         }
 
         [Fact]
@@ -190,7 +190,7 @@ namespace SoloX.TableModel.UTests
                 result.Should().NotBeNull();
 
                 result.Select(p => p.FirstName).Should().BeEquivalentTo(dbContext.Persons.Where(p => p.SomeGuid == null || p.SomeGuid == guid).Select(p => p.FirstName));
-            }).ConfigureAwait(false);
+            });
         }
 
         [Fact]
@@ -210,7 +210,8 @@ namespace SoloX.TableModel.UTests
                     });
                 });
 
-                await using var sp = services.BuildServiceProvider();
+                var sp = services.BuildServiceProvider();
+                await using var _ = sp.ConfigureAwait(false);
 
                 var tableDataRepository = sp.GetService<ITableDataRepository>();
 
@@ -220,7 +221,7 @@ namespace SoloX.TableModel.UTests
 
                 Assert.NotNull(tableData);
                 Assert.IsType<FamilyMemberTableData>(tableData);
-            }).ConfigureAwait(false);
+            });
         }
 
         [Fact]
@@ -237,7 +238,8 @@ namespace SoloX.TableModel.UTests
                     builder.UseQueryableTableData<FamilyMemberDto, FamilyMemberTableData>("MyTableId");
                 });
 
-                await using var sp = services.BuildServiceProvider();
+                var sp = services.BuildServiceProvider();
+                await using var _ = sp.ConfigureAwait(false);
 
                 var tableDataRepository = sp.GetService<ITableDataRepository>();
 
@@ -247,7 +249,7 @@ namespace SoloX.TableModel.UTests
 
                 Assert.NotNull(tableData);
                 Assert.Equal("MyTableId", tableData.Id);
-            }).ConfigureAwait(false);
+            });
         }
 
         [Fact]
@@ -264,7 +266,8 @@ namespace SoloX.TableModel.UTests
                     builder.UseQueryableTableData<FamilyMemberDto, FamilyMemberTableData>();
                 });
 
-                await using var sp = services.BuildServiceProvider();
+                var sp = services.BuildServiceProvider();
+                await using var _ = sp.ConfigureAwait(false);
 
                 var tableDataRepository = sp.GetService<ITableDataRepository>();
 
@@ -275,7 +278,7 @@ namespace SoloX.TableModel.UTests
                 Assert.NotNull(tableData);
                 Assert.Equal(typeof(FamilyMemberDto).FullName, tableData.Id);
                 Assert.IsType<FamilyMemberTableData>(tableData);
-            }).ConfigureAwait(false);
+            });
         }
 
         [Fact]
@@ -295,7 +298,7 @@ namespace SoloX.TableModel.UTests
 
                 result.Select(p => p.FirstName).Should().BeEquivalentTo(dbContext.Persons.Select(p => p.FirstName.ToUpper(CultureInfo.InvariantCulture)));
 
-            }).ConfigureAwait(false);
+            });
         }
 
         [Fact]
@@ -314,12 +317,14 @@ namespace SoloX.TableModel.UTests
                 result.Select(p => p.FirstName).Should().BeEquivalentTo(
                     dbContext.Persons.Where(p => p.Family.Name.StartsWith("Do")).Select(p => p.FirstName));
 
-            }).ConfigureAwait(false);
+            });
         }
 
         private async Task SetupDbContextAndRunTestAsync(Func<FamilyDbContext, Task> testHandler)
         {
-            await using var connection = new SqliteConnection("DataSource=:memory:");
+            var connection = new SqliteConnection("DataSource=:memory:");
+            await using var _ = connection.ConfigureAwait(false);
+
             using var loggerFactory = new TestLoggerFactory(this.testOutputHelper);
             await connection.OpenAsync().ConfigureAwait(false);
 
@@ -329,13 +334,17 @@ namespace SoloX.TableModel.UTests
                 .EnableSensitiveDataLogging()
                 .Options;
 
-            await using (var dbContext = new FamilyDbContext(options))
             {
+                var dbContext = new FamilyDbContext(options);
+                await using var _1 = dbContext.ConfigureAwait(false);
+
                 await dbContext.Database.EnsureCreatedAsync().ConfigureAwait(false);
             }
 
-            await using (var dbContext = new FamilyDbContext(options))
             {
+                var dbContext = new FamilyDbContext(options);
+                await using var _1 = dbContext.ConfigureAwait(false);
+
                 await dbContext.Families.AddRangeAsync(Family.GetSomeFamilies()).ConfigureAwait(false);
 
                 await dbContext.SaveChangesAsync().ConfigureAwait(false);
@@ -344,7 +353,7 @@ namespace SoloX.TableModel.UTests
             }
         }
 
-        internal class FamilyMemberTableData : AQueryableTableData<FamilyMemberDto>
+        internal sealed class FamilyMemberTableData : AQueryableTableData<FamilyMemberDto>
         {
             private readonly FamilyDbContext familyDbContext;
             private readonly Func<FamilyMemberDto, FamilyMemberDto> postProcessing;
