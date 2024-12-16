@@ -10,6 +10,10 @@ using SoloX.ExpressionTools.Transform.Impl;
 using System;
 using System.Linq.Expressions;
 
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#endif
+
 namespace SoloX.TableModel.Impl
 {
     /// <summary>
@@ -43,10 +47,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public void Accept(IColumnFilterVisitor<TData> visitor)
         {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
+            ArgumentNullException.ThrowIfNull(visitor, nameof(visitor));
 
             visitor.Visit(this);
         }
@@ -54,10 +55,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public TResult Accept<TResult>(IColumnFilterVisitor<TData, TResult> visitor)
         {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
+            ArgumentNullException.ThrowIfNull(visitor, nameof(visitor));
 
             return visitor.Visit(this);
         }
@@ -65,10 +63,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public TResult Accept<TResult, TArg>(IColumnFilterVisitor<TData, TResult, TArg> visitor, TArg arg)
         {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
+            ArgumentNullException.ThrowIfNull(visitor, nameof(visitor));
 
             return visitor.Visit(this, arg);
         }
@@ -78,10 +73,7 @@ namespace SoloX.TableModel.Impl
             Expression<Func<TColumn, bool>> filter,
             out Expression<Func<TColumn, bool>> inLinedFilter)
         {
-            if (column == null)
-            {
-                throw new ArgumentNullException(nameof(column));
-            }
+            ArgumentNullException.ThrowIfNull(column, nameof(column));
 
             // Value filter : (v) => 5 > v > 10
             // Column value : (d) => d.v

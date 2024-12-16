@@ -6,12 +6,17 @@
 // </copyright>
 // ----------------------------------------------------------------------
 
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Options;
 using SoloX.TableModel.Options.Impl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#endif
 
 namespace SoloX.TableModel.Impl
 {
@@ -20,10 +25,10 @@ namespace SoloX.TableModel.Impl
     /// </summary>
     public class TableStructureRepository : ITableStructureRepository
     {
-        private readonly IDictionary<string, ITableStructure> tableStructures = new Dictionary<string, ITableStructure>();
-        private readonly IDictionary<string, IDictionary<string, ITableDecorator>> tableDecorators = new Dictionary<string, IDictionary<string, ITableDecorator>>();
+        private readonly Dictionary<string, ITableStructure> tableStructures = new Dictionary<string, ITableStructure>();
+        private readonly Dictionary<string, IDictionary<string, ITableDecorator>> tableDecorators = new Dictionary<string, IDictionary<string, ITableDecorator>>();
 
-        private readonly IDictionary<string, ATableStructureOptions> tableStructureOptions;
+        private readonly Dictionary<string, ATableStructureOptions> tableStructureOptions;
         private readonly IServiceProvider serviceProvider;
 
         /// <summary>
@@ -33,12 +38,10 @@ namespace SoloX.TableModel.Impl
         /// <param name="serviceProvider"></param>
         public TableStructureRepository(IOptions<TableModelOptions> options, IServiceProvider serviceProvider)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            ArgumentNullException.ThrowIfNull(options, nameof(options));
+            ArgumentNullException.ThrowIfNull(serviceProvider, nameof(serviceProvider));
 
-            this.serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            this.serviceProvider = serviceProvider;
 
             this.tableStructureOptions = options.Value.TableStructureOptions.ToDictionary(x => x.TableStructureId);
         }
@@ -134,10 +137,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public void Register<TData, TId>(ITableStructure<TData, TId> table)
         {
-            if (table == null)
-            {
-                throw new ArgumentNullException(nameof(table));
-            }
+            ArgumentNullException.ThrowIfNull(table, nameof(table));
 
             this.tableStructures.Add(table.Id, table);
         }
@@ -145,10 +145,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public void Register<TData, TDecorator>(ITableDecorator<TData, TDecorator> decorator)
         {
-            if (decorator == null)
-            {
-                throw new ArgumentNullException(nameof(decorator));
-            }
+            ArgumentNullException.ThrowIfNull(decorator, nameof(decorator));
 
             if (!this.tableDecorators.TryGetValue(decorator.TableStructure.Id, out var map))
             {

@@ -85,7 +85,7 @@ namespace SoloX.TableModel.UTests.Services
         [Fact]
         public void ItShouldMapDtoToTableColumnDecorator()
         {
-            Expression<Func<string, string>> relativeExpression = p => p.ToUpper();
+            Expression<Func<string, string>> relativeExpression = p => p.ToUpperInvariant();
             Expression<Func<Person, string>> columnExpression = p => p.FirstName;
 
             Expression<Func<string>> headerExpression = () => "FirstName";
@@ -115,15 +115,17 @@ namespace SoloX.TableModel.UTests.Services
                 BirthDate = new DateTime(3054, 5, 24),
             };
 
-            columnDecorator.Decorate(persone).Should().Be(persone.FirstName.ToUpper());
+            columnDecorator.Decorate(persone).Should().Be(persone.FirstName.ToUpperInvariant());
             columnDecorator.DecorateHeader().Should().Be("FirstName");
         }
 
         [Fact]
         public void ItShouldMapDtoToTableDecorator()
         {
-            Expression<Func<object, string>> relativeDefaultExpression = p => p.ToString().ToLower();
-            Expression<Func<string, string>> relativeExpression = p => p.ToUpper();
+#pragma warning disable CA1308 // Normalize strings to uppercase
+            Expression<Func<object, string>> relativeDefaultExpression = p => p.ToString().ToLowerInvariant();
+#pragma warning restore CA1308 // Normalize strings to uppercase
+            Expression<Func<string, string>> relativeExpression = p => p.ToUpperInvariant();
 
             Expression<Func<IColumn<Person>, string>> defaultHeaderExpression = c => c.Id;
             Expression<Func<string>> headerExpression = () => "First Name";
@@ -166,10 +168,12 @@ namespace SoloX.TableModel.UTests.Services
             };
 
             decorator.Decorate(column, persone)
-                .Should().Be(persone.FirstName.ToUpper());
+                .Should().Be(persone.FirstName.ToUpperInvariant());
 
+#pragma warning disable CA1308 // Normalize strings to uppercase
             decorator.Decorate(tableStructure[nameof(Person.LastName)], persone)
-                .Should().Be(persone.LastName.ToLower());
+                .Should().Be(persone.LastName.ToLowerInvariant());
+#pragma warning restore CA1308 // Normalize strings to uppercase
 
             decorator.DecorateHeader(tableStructure[nameof(Person.LastName)])
                 .Should().Be(nameof(Person.LastName));

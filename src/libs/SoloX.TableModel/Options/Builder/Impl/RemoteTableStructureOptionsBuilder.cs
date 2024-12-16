@@ -10,6 +10,10 @@ using System;
 using System.Collections.Generic;
 using SoloX.TableModel.Options.Impl;
 
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#endif
+
 namespace SoloX.TableModel.Options.Builder.Impl
 {
     /// <summary>
@@ -57,10 +61,7 @@ namespace SoloX.TableModel.Options.Builder.Impl
         /// <inheritdoc/>
         public IRemoteTableStructureOptionsBuilder<TData, TId> WithRemoteDecorator<TDecorator>(string decoratorId, Action<IRemoteTableDecoratorOptions<TData, TDecorator>> tableDecoratorOptionsSetup)
         {
-            if (tableDecoratorOptionsSetup == null)
-            {
-                throw new ArgumentNullException(nameof(tableDecoratorOptionsSetup));
-            }
+            ArgumentNullException.ThrowIfNull(tableDecoratorOptionsSetup, nameof(tableDecoratorOptionsSetup));
 
             var decoratorOptions = new RemoteTableDecoratorOptions<TData, TId, TDecorator>(TableStructureId, decoratorId);
 
@@ -74,10 +75,7 @@ namespace SoloX.TableModel.Options.Builder.Impl
         /// <inheritdoc/>
         public IRemoteTableStructureOptionsBuilder<TData, TId> WithDecorator<TDecorator>(string decoratorId, Action<ILocalTableDecoratorOptions<TData, TDecorator>> tableDecoratorOptionsSetup)
         {
-            if (tableDecoratorOptionsSetup == null)
-            {
-                throw new ArgumentNullException(nameof(tableDecoratorOptionsSetup));
-            }
+            ArgumentNullException.ThrowIfNull(tableDecoratorOptionsSetup, nameof(tableDecoratorOptionsSetup));
 
             var decoratorOptions = new LocalTableDecoratorOptions<TData, TId, TDecorator>(TableStructureId, decoratorId);
 

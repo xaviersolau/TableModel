@@ -6,9 +6,14 @@
 // </copyright>
 // ----------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#else
+using System;
+#endif
 
 namespace SoloX.TableModel.Impl
 {
@@ -37,10 +42,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public void Accept(ITableDataVisitor visitor)
         {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
+            ArgumentNullException.ThrowIfNull(visitor, nameof(visitor));
 
             visitor.Visit(this);
         }
@@ -48,10 +50,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public TResult Accept<TResult>(ITableDataVisitor<TResult> visitor)
         {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
+            ArgumentNullException.ThrowIfNull(visitor, nameof(visitor));
 
             return visitor.Visit(this);
         }
@@ -59,10 +58,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public TResult Accept<TResult, TArg>(ITableDataVisitor<TResult, TArg> visitor, TArg arg)
         {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
+            ArgumentNullException.ThrowIfNull(visitor, nameof(visitor));
 
             return visitor.Visit(this, arg);
         }

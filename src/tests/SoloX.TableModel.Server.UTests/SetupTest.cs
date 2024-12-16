@@ -77,7 +77,7 @@ namespace SoloX.TableModel.Server.UTests
                             tableId,
                             config =>
                             {
-                                config.AddData(new[] { "Hello" });
+                                config.AddData(["Hello"]);
                             });
                     });
 

@@ -99,11 +99,11 @@ namespace SoloX.TableModel.UTests
             var resultData = await dataTable.GetDataPageAsync(1, 2);
 
             resultData.Should().NotBeNull();
-            resultData.Should().BeEquivalentTo(new[]
-            {
+            resultData.Should().BeEquivalentTo(
+            [
                 "data2",
                 "data3",
-            });
+            ]);
         }
 
         [Fact]
@@ -268,10 +268,10 @@ namespace SoloX.TableModel.UTests
             var resultData = await dataTable.GetDataPageAsync(filterMock.Object, 1, 2);
 
             resultData.Should().NotBeNull();
-            resultData.Should().BeEquivalentTo(new[]
-            {
+            resultData.Should().BeEquivalentTo(
+            [
                 "data3",
-            });
+            ]);
         }
 
         private static Mock<ITableFilter<TData>> SetupColumnFilterMock<TData, TColumn>(Expression<Func<TColumn, bool>> dataFilterExp, Mock<IColumn<TData, TColumn>> columnMock)

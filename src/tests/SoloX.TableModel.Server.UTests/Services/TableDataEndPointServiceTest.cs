@@ -28,7 +28,7 @@ namespace SoloX.TableModel.Server.UTests
         [Fact]
         public async Task ItShouldGetFilteredDataThoughTheEndPointUsingColumnFilter()
         {
-            Expression<Func<string, bool>> dataFilterExp = d => d.Contains("J");
+            Expression<Func<string, bool>> dataFilterExp = d => d.Contains("JA");
             Expression<Func<Person, string>> dataGetterExp = d => d.FirstName;
 
             var tableId = "id";
@@ -54,14 +54,13 @@ namespace SoloX.TableModel.Server.UTests
                     mock.Setup(s => s.Map<Person>(columnDto))
                         .Returns(new Column<Person, string>(columnDto.Id, dataGetterExp));
                 },
-                Person.GetSomePersons().Where(p => p.FirstName.Contains("J", StringComparison.InvariantCulture)))
-                .ConfigureAwait(false);
+                Person.GetSomePersons().Where(p => p.FirstName.Contains("JA", StringComparison.InvariantCulture)));
         }
 
         [Fact]
         public async Task ItShouldGetFilteredDataThoughTheEndPointUsingDataFilter()
         {
-            Expression<Func<Person, bool>> dataFilterExp = d => d.FirstName.Contains("J");
+            Expression<Func<Person, bool>> dataFilterExp = d => d.FirstName.Contains("JA");
 
             var tableId = "id";
             var inMemoryTableData = new InMemoryTableData<Person>(tableId, Person.GetSomePersons());
@@ -74,8 +73,7 @@ namespace SoloX.TableModel.Server.UTests
             await ProcessGetFilteredDataThoughTheEndPointTest(
                 filterDto,
                 mock => { },
-                Person.GetSomePersons().Where(p => p.FirstName.Contains("J", StringComparison.InvariantCulture)))
-                .ConfigureAwait(false);
+                Person.GetSomePersons().Where(p => p.FirstName.Contains("JA", StringComparison.InvariantCulture)));
         }
 
         private static async Task ProcessGetFilteredDataThoughTheEndPointTest(FilterDto filterDto, Action<Mock<IDtoToTableModelService>> setupMock, IEnumerable<Person> expectedFirstName)
@@ -110,11 +108,11 @@ namespace SoloX.TableModel.Server.UTests
 
             var endPointService = new TableDataEndPointService(repositoryMock.Object, dtoToTableModelServiceMock.Object, loggerMock.Object);
 
-            var count = await endPointService.ProcessDataCountRequestAsync(tableId, requestCount);
+            var count = await endPointService.ProcessDataCountRequestAsync(tableId, requestCount).ConfigureAwait(false);
 
             count.Should().Be(expectedFirstName.Count());
 
-            var data = await endPointService.ProcessDataRequestAsync<object>(tableId, request);
+            var data = await endPointService.ProcessDataRequestAsync<object>(tableId, request).ConfigureAwait(false);
 
             data.Should().NotBeNull();
 

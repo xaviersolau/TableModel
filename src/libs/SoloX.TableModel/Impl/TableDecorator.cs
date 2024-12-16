@@ -11,6 +11,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#endif
+
 namespace SoloX.TableModel.Impl
 {
     /// <summary>
@@ -22,7 +26,7 @@ namespace SoloX.TableModel.Impl
     {
         private readonly Dictionary<string, IColumnDecorator<TData, TDecorator>> decoratorExpression = new Dictionary<string, IColumnDecorator<TData, TDecorator>>();
 
-        private Func<object, TDecorator>? defaultDecorator;
+        private Func<object?, TDecorator>? defaultDecorator;
         private Func<IColumn<TData>, TDecorator>? defaultHeaderDecorator;
 
         ///<inheritdoc/>
@@ -50,8 +54,11 @@ namespace SoloX.TableModel.Impl
         /// <param name="tableStructure">Table structure to decorate.</param>
         public TableDecorator(string id, ITableStructure<TData> tableStructure)
         {
-            TableStructure = tableStructure ?? throw new ArgumentNullException(nameof(tableStructure));
-            Id = id ?? throw new ArgumentNullException(nameof(id));
+            ArgumentNullException.ThrowIfNull(id, nameof(id));
+            ArgumentNullException.ThrowIfNull(tableStructure, nameof(tableStructure));
+
+            TableStructure = tableStructure;
+            Id = id;
         }
 
         /// <summary>
@@ -62,10 +69,13 @@ namespace SoloX.TableModel.Impl
         /// <exception cref="ArgumentNullException"></exception>
         public void RegisterDefault(Expression<Func<object, TDecorator>> decoratorExpression, Expression<Func<IColumn<TData>, TDecorator>> headerDecoratorExpression)
         {
-            DefaultDecoratorExpression = decoratorExpression ?? throw new ArgumentNullException(nameof(decoratorExpression));
+            ArgumentNullException.ThrowIfNull(decoratorExpression, nameof(decoratorExpression));
+            ArgumentNullException.ThrowIfNull(headerDecoratorExpression, nameof(headerDecoratorExpression));
+
+            DefaultDecoratorExpression = decoratorExpression;
             this.defaultDecorator = decoratorExpression.Compile();
 
-            DefaultHeaderDecoratorExpression = headerDecoratorExpression ?? throw new ArgumentNullException(nameof(headerDecoratorExpression));
+            DefaultHeaderDecoratorExpression = headerDecoratorExpression;
             this.defaultHeaderDecorator = headerDecoratorExpression.Compile();
         }
 
@@ -105,10 +115,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public bool TryRegister<TColumn>(IColumnDecorator<TData, TDecorator, TColumn> tableColumnDecorator)
         {
-            if (tableColumnDecorator == null)
-            {
-                throw new ArgumentNullException(nameof(tableColumnDecorator));
-            }
+            ArgumentNullException.ThrowIfNull(tableColumnDecorator, nameof(tableColumnDecorator));
 
             var matchingColumn = TableStructure.Columns.FirstOrDefault(x => x.Id == tableColumnDecorator.Column.Id);
 
@@ -124,26 +131,20 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public TDecorator Decorate(IColumn<TData> tableColumn, TData data)
         {
-            if (tableColumn == null)
-            {
-                throw new ArgumentNullException(nameof(tableColumn));
-            }
+            ArgumentNullException.ThrowIfNull(tableColumn, nameof(tableColumn));
 
             if (this.decoratorExpression.TryGetValue(tableColumn.Id, out var columnDecorator))
             {
                 return columnDecorator.Decorate(data);
             }
 
-            return this.defaultDecorator != null ? this.defaultDecorator(tableColumn.GetObject(data)) : default;
+            return this.defaultDecorator != null ? this.defaultDecorator(tableColumn.GetObject(data)) : default!;
         }
 
         ///<inheritdoc/>
         public TDecorator DecorateHeader(IColumn<TData> tableColumn)
         {
-            if (tableColumn == null)
-            {
-                throw new ArgumentNullException(nameof(tableColumn));
-            }
+            ArgumentNullException.ThrowIfNull(tableColumn, nameof(tableColumn));
 
             if (this.decoratorExpression.TryGetValue(tableColumn.Id, out var columnDecorator))
             {
@@ -153,7 +154,7 @@ namespace SoloX.TableModel.Impl
                 }
             }
 
-            return this.defaultHeaderDecorator != null ? this.defaultHeaderDecorator(tableColumn) : default;
+            return this.defaultHeaderDecorator != null ? this.defaultHeaderDecorator(tableColumn) : default!;
         }
     }
 }

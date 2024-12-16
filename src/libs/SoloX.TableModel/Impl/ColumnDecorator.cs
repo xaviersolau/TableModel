@@ -10,6 +10,10 @@ using System;
 using System.Linq.Expressions;
 using SoloX.ExpressionTools.Transform.Impl;
 
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#endif
+
 namespace SoloX.TableModel.Impl
 {
     /// <summary>
@@ -33,9 +37,11 @@ namespace SoloX.TableModel.Impl
             Expression<Func<TColumn, TDecorator>> relativeDecoratorExpression,
             Expression<Func<TDecorator>> headerDecoratorExpression)
         {
-            Column = column ?? throw new ArgumentNullException(nameof(column));
-            RelativeDecoratorExpression = relativeDecoratorExpression ?? throw new ArgumentNullException(nameof(relativeDecoratorExpression));
+            ArgumentNullException.ThrowIfNull(column, nameof(column));
+            ArgumentNullException.ThrowIfNull(relativeDecoratorExpression, nameof(relativeDecoratorExpression));
 
+            Column = column;
+            RelativeDecoratorExpression = relativeDecoratorExpression;
             HeaderDecoratorExpression = headerDecoratorExpression;
 
             // Value filter : (v) => v.ToString()
@@ -83,10 +89,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public void Accept(IColumnDecoratorVisitor<TData, TDecorator> visitor)
         {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
+            ArgumentNullException.ThrowIfNull(visitor, nameof(visitor));
 
             visitor.Visit(this);
         }
@@ -94,10 +97,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public TResult Accept<TResult>(IColumnDecoratorVisitor<TData, TDecorator, TResult> visitor)
         {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
+            ArgumentNullException.ThrowIfNull(visitor, nameof(visitor));
 
             return visitor.Visit(this);
         }
@@ -105,10 +105,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public TResult Accept<TResult, TArg>(IColumnDecoratorVisitor<TData, TDecorator, TResult, TArg> visitor, TArg arg)
         {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
+            ArgumentNullException.ThrowIfNull(visitor, nameof(visitor));
 
             return visitor.Visit(this, arg);
         }

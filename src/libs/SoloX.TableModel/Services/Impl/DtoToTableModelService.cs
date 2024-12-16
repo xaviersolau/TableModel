@@ -16,6 +16,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#endif
+
 namespace SoloX.TableModel.Services.Impl
 {
     /// <summary>
@@ -23,7 +27,7 @@ namespace SoloX.TableModel.Services.Impl
     /// </summary>
     public class DtoToTableModelService : IDtoToTableModelService
     {
-        private static readonly IDictionary<string, Type> BaseType = new Dictionary<string, Type>()
+        private static readonly Dictionary<string, Type> BaseType = new Dictionary<string, Type>()
         {
             ["string"] = typeof(string),
             ["char"] = typeof(char),
@@ -39,10 +43,7 @@ namespace SoloX.TableModel.Services.Impl
         /// <inheritdoc/>
         public IColumn<TData> Map<TData>(ColumnDto dto)
         {
-            if (dto == null)
-            {
-                throw new ArgumentNullException(nameof(dto));
-            }
+            ArgumentNullException.ThrowIfNull(dto, nameof(dto));
 
             var columnType = BaseType.TryGetValue(dto.DataType, out var t) ? t : Type.GetType(dto.DataType);
 
@@ -50,16 +51,13 @@ namespace SoloX.TableModel.Services.Impl
 
             var method = methodGeneric.MakeGenericMethod(typeof(TData), columnType);
 
-            return (IColumn<TData>)method.Invoke(this, new[] { dto });
+            return (IColumn<TData>)method.Invoke(this, new[] { dto })!;
         }
 
         /// <inheritdoc/>
         public static IColumn<TData, TColumn> Map<TData, TColumn>(ColumnDto dto)
         {
-            if (dto == null)
-            {
-                throw new ArgumentNullException(nameof(dto));
-            }
+            ArgumentNullException.ThrowIfNull(dto, nameof(dto));
 
             var expressionParser = new ExpressionParser(new SingleParameterTypeResolver(typeof(TData)));
 
@@ -73,10 +71,7 @@ namespace SoloX.TableModel.Services.Impl
         /// <inheritdoc/>
         public ITableStructure<TData> Map<TData>(TableStructureDto dto)
         {
-            if (dto == null)
-            {
-                throw new ArgumentNullException(nameof(dto));
-            }
+            ArgumentNullException.ThrowIfNull(dto, nameof(dto));
 
             var idType = Type.GetType(dto.IdType);
 
@@ -84,16 +79,13 @@ namespace SoloX.TableModel.Services.Impl
 
             var method = methodGeneric.MakeGenericMethod(typeof(TData), idType);
 
-            return (ITableStructure<TData>)method.Invoke(this, new[] { dto });
+            return (ITableStructure<TData>)method.Invoke(this, new[] { dto })!;
         }
 
         /// <inheritdoc/>
         public ITableStructure<TData, TId> Map<TData, TId>(TableStructureDto dto)
         {
-            if (dto == null)
-            {
-                throw new ArgumentNullException(nameof(dto));
-            }
+            ArgumentNullException.ThrowIfNull(dto, nameof(dto));
 
             var dataType = Type.GetType(dto.DataType);
             var idType = Type.GetType(dto.IdType);
@@ -124,10 +116,7 @@ namespace SoloX.TableModel.Services.Impl
         /// <inheritdoc/>
         public ITableDecorator<TData, TDecorator> Map<TData, TDecorator>(TableDecoratorDto dto, ITableStructure<TData> tableStructure)
         {
-            if (dto == null)
-            {
-                throw new ArgumentNullException(nameof(dto));
-            }
+            ArgumentNullException.ThrowIfNull(dto, nameof(dto));
 
             var decoratorType = Type.GetType(dto.DecoratorType);
 
@@ -176,10 +165,7 @@ namespace SoloX.TableModel.Services.Impl
         /// <inheritdoc/>
         public IColumnDecorator<TData, TDecorator, TColumn> Map<TData, TDecorator, TColumn>(ColumnDecoratorDto dto, IColumn<TData, TColumn> column)
         {
-            if (dto == null)
-            {
-                throw new ArgumentNullException(nameof(dto));
-            }
+            ArgumentNullException.ThrowIfNull(dto, nameof(dto));
 
             var expressionParser = new ExpressionParser(new SingleParameterTypeResolver(typeof(TColumn)));
 

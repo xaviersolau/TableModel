@@ -56,9 +56,11 @@ namespace SoloX.TableModel.UTests
                             "TextDecorator2",
                              config =>
                              {
+#pragma warning disable CA1308 // Normalize strings to uppercase
                                  config
                                      .AddDefault(v => v.ToString(), c => c.Id)
                                      .Add<string>(nameof(Person.LastName), n => n.ToLower(CultureInfo.InvariantCulture), () => "Last Name");
+#pragma warning restore CA1308 // Normalize strings to uppercase
                              });
 
                     builder.UseMemoryTableData<Person>(
@@ -129,9 +131,11 @@ namespace SoloX.TableModel.UTests
                             "TextDecorator2",
                              config =>
                              {
+#pragma warning disable CA1308 // Normalize strings to uppercase
                                  config
                                      .AddDefault(v => v.ToString(), c => c.Id)
                                      .Add(p => p.LastName, n => n.ToLower(CultureInfo.InvariantCulture), () => "Last Name");
+#pragma warning restore CA1308 // Normalize strings to uppercase
                              });
 
                     builder.UseMemoryTableData<Person>(

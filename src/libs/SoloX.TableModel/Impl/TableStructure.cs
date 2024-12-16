@@ -6,9 +6,14 @@
 // </copyright>
 // ----------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
+
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#else
+using System;
+#endif
 
 namespace SoloX.TableModel.Impl
 {
@@ -19,7 +24,7 @@ namespace SoloX.TableModel.Impl
     /// <typeparam name="TId">Table Id type.</typeparam>
     public class TableStructure<TData, TId> : ITableStructure<TData, TId>
     {
-        private readonly IDictionary<string, IColumn<TData>> columnMap;
+        private readonly Dictionary<string, IColumn<TData>> columnMap;
 
         /// <summary>
         /// Setup a TableStructure
@@ -40,15 +45,8 @@ namespace SoloX.TableModel.Impl
         /// <param name="dataColumns">Data columns.</param>
         public TableStructure(string id, IColumn<TData, TId> idColumn, IEnumerable<IColumn<TData>> dataColumns)
         {
-            if (idColumn == null)
-            {
-                throw new ArgumentNullException(nameof(idColumn));
-            }
-
-            if (dataColumns == null)
-            {
-                throw new ArgumentNullException(nameof(dataColumns));
-            }
+            ArgumentNullException.ThrowIfNull(idColumn, nameof(idColumn));
+            ArgumentNullException.ThrowIfNull(dataColumns, nameof(dataColumns));
 
             Id = id;
 
@@ -86,10 +84,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public void Accept(ITableStructureVisitor visitor)
         {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
+            ArgumentNullException.ThrowIfNull(visitor, nameof(visitor));
 
             visitor.Visit(this);
         }
@@ -97,10 +92,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public TResult Accept<TResult>(ITableStructureVisitor<TResult> visitor)
         {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
+            ArgumentNullException.ThrowIfNull(visitor, nameof(visitor));
 
             return visitor.Visit(this);
         }
@@ -108,10 +100,7 @@ namespace SoloX.TableModel.Impl
         ///<inheritdoc/>
         public TResult Accept<TResult, TArg>(ITableStructureVisitor<TResult, TArg> visitor, TArg arg)
         {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
+            ArgumentNullException.ThrowIfNull(visitor, nameof(visitor));
 
             return visitor.Visit(this, arg);
         }

@@ -121,7 +121,7 @@ namespace SoloX.TableModel.UTests
         [Fact]
         public async Task ItShouldReturnTheFilteredDate2()
         {
-            Expression<Func<string, bool>> filter = d => d.Contains("a");
+            Expression<Func<string, bool>> filter = d => d.Contains("an");
 
             Expression<Func<FamilyMemberDto, string>> data = d => d.FirstName;
 
@@ -139,7 +139,7 @@ namespace SoloX.TableModel.UTests
 
                 result.Should().NotBeNull();
 
-                result.Select(p => p.FirstName).Should().BeEquivalentTo(dbContext.Persons.Where(p => p.FirstName.Contains("a")).Select(p => p.FirstName));
+                result.Select(p => p.FirstName).Should().BeEquivalentTo(dbContext.Persons.Where(p => p.FirstName.Contains("an")).Select(p => p.FirstName));
             }).ConfigureAwait(false);
         }
 

@@ -14,6 +14,10 @@ using SoloX.TableModel.Services;
 using SoloX.TableModel.Dto;
 using System.Net.Http.Json;
 
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#endif
+
 namespace SoloX.TableModel.Options.Impl
 {
     /// <summary>
@@ -25,7 +29,7 @@ namespace SoloX.TableModel.Options.Impl
     public class RemoteTableDecoratorOptions<TData, TId, TDecorator> : ATableDecoratorOptions, IRemoteTableDecoratorOptions<TData, TDecorator>
     {
         /// <inheritdoc/>
-        public HttpClient HttpClient { get; set; }
+        public HttpClient HttpClient { get; set; } = default!;
 
         /// <summary>
         /// Setup remote table decorator options.
@@ -40,10 +44,7 @@ namespace SoloX.TableModel.Options.Impl
         /// <inheritdoc/>
         public override async Task<ITableDecorator> CreateModelInstanceAsync(IServiceProvider serviceProvider, ITableStructureRepository tableStructureRepository)
         {
-            if (tableStructureRepository == null)
-            {
-                throw new ArgumentNullException(nameof(tableStructureRepository));
-            }
+            ArgumentNullException.ThrowIfNull(tableStructureRepository, nameof(tableStructureRepository));
 
             var tableStructure = await tableStructureRepository.GetTableStructureAsync<TData>(TableStructureId).ConfigureAwait(false);
 

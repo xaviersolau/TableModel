@@ -18,6 +18,8 @@
 
     <Nullable>enable</Nullable>
 
+    <CodeQualityLoggerUseDisabled>true</CodeQualityLoggerUseDisabled>
+
   </PropertyGroup>
 
 </Project>

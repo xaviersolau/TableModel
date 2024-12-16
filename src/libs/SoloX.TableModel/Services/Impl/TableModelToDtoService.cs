@@ -8,8 +8,13 @@
 
 using SoloX.ExpressionTools.Transform;
 using SoloX.TableModel.Dto;
-using System;
 using System.Linq;
+
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#else
+using System;
+#endif
 
 namespace SoloX.TableModel.Services.Impl
 {
@@ -21,10 +26,7 @@ namespace SoloX.TableModel.Services.Impl
         /// <inheritdoc/>
         public ColumnDto Map<TData>(IColumn<TData> column)
         {
-            if (column == null)
-            {
-                throw new ArgumentNullException(nameof(column));
-            }
+            ArgumentNullException.ThrowIfNull(column, nameof(column));
 
             var visitor = new Visitor<TData>();
 
@@ -34,10 +36,7 @@ namespace SoloX.TableModel.Services.Impl
         /// <inheritdoc/>
         public ColumnDto Map<TData, TColumn>(IColumn<TData, TColumn> column)
         {
-            if (column == null)
-            {
-                throw new ArgumentNullException(nameof(column));
-            }
+            ArgumentNullException.ThrowIfNull(column, nameof(column));
 
             return new ColumnDto()
             {
@@ -53,10 +52,7 @@ namespace SoloX.TableModel.Services.Impl
         /// <inheritdoc/>
         public TableStructureDto Map<TData, TId>(ITableStructure<TData, TId> tableStructure)
         {
-            if (tableStructure == null)
-            {
-                throw new ArgumentNullException(nameof(tableStructure));
-            }
+            ArgumentNullException.ThrowIfNull(tableStructure, nameof(tableStructure));
 
             var visitor = new Visitor<TData>();
 
@@ -75,10 +71,7 @@ namespace SoloX.TableModel.Services.Impl
         /// <inheritdoc/>
         public ColumnDecoratorDto Map<TData, TDecorator>(IColumnDecorator<TData, TDecorator> columnDecorator)
         {
-            if (columnDecorator == null)
-            {
-                throw new ArgumentNullException(nameof(columnDecorator));
-            }
+            ArgumentNullException.ThrowIfNull(columnDecorator, nameof(columnDecorator));
 
             var visitor = new DecoratorVisitor<TData, TDecorator>();
 
@@ -88,10 +81,7 @@ namespace SoloX.TableModel.Services.Impl
         /// <inheritdoc/>
         public ColumnDecoratorDto Map<TData, TDecorator, TColumn>(IColumnDecorator<TData, TDecorator, TColumn> columnDecorator)
         {
-            if (columnDecorator == null)
-            {
-                throw new ArgumentNullException(nameof(columnDecorator));
-            }
+            ArgumentNullException.ThrowIfNull(columnDecorator, nameof(columnDecorator));
 
             return new ColumnDecoratorDto()
             {
@@ -104,10 +94,7 @@ namespace SoloX.TableModel.Services.Impl
         /// <inheritdoc/>
         public TableDecoratorDto Map<TData, TDecorator>(ITableDecorator<TData, TDecorator> tableDecorator)
         {
-            if (tableDecorator == null)
-            {
-                throw new ArgumentNullException(nameof(tableDecorator));
-            }
+            ArgumentNullException.ThrowIfNull(tableDecorator, nameof(tableDecorator));
 
             var visitor = new DecoratorVisitor<TData, TDecorator>();
 
@@ -121,7 +108,7 @@ namespace SoloX.TableModel.Services.Impl
             };
         }
 
-        private class DecoratorVisitor<TData, TDecorator> : IColumnDecoratorVisitor<TData, TDecorator, ColumnDecoratorDto>
+        private sealed class DecoratorVisitor<TData, TDecorator> : IColumnDecoratorVisitor<TData, TDecorator, ColumnDecoratorDto>
         {
             public ColumnDecoratorDto Visit<TColumn>(IColumnDecorator<TData, TDecorator, TColumn> columnDecorator)
             {
@@ -133,7 +120,7 @@ namespace SoloX.TableModel.Services.Impl
             }
         }
 
-        private class Visitor<TData> : IColumnVisitor<TData, ColumnDto>
+        private sealed class Visitor<TData> : IColumnVisitor<TData, ColumnDto>
         {
             public ColumnDto Visit<TColumn>(IColumn<TData, TColumn> column)
             {

@@ -14,6 +14,10 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
+#if NETSTANDARD2_1
+using ArgumentNullException = SoloX.TableModel.Utils.ArgumentNullException;
+#endif
+
 namespace SoloX.TableModel.Options.Impl
 {
     /// <summary>
@@ -104,10 +108,7 @@ namespace SoloX.TableModel.Options.Impl
         /// <inheritdoc/>
         public override async Task<ITableDecorator> CreateModelInstanceAsync(IServiceProvider serviceProvider, ITableStructureRepository tableStructureRepository)
         {
-            if (tableStructureRepository == null)
-            {
-                throw new ArgumentNullException(nameof(tableStructureRepository));
-            }
+            ArgumentNullException.ThrowIfNull(tableStructureRepository, nameof(tableStructureRepository));
 
             var tableStructure = await tableStructureRepository
                 .GetTableStructureAsync<TData>(TableStructureId)

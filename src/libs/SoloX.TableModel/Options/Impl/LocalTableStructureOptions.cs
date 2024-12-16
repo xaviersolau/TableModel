@@ -6,7 +6,6 @@
 // </copyright>
 // ----------------------------------------------------------------------
 
-using SoloX.ExpressionTools.Transform;
 using SoloX.ExpressionTools.Transform.Impl.Resolver;
 using SoloX.TableModel.Impl;
 using System;
@@ -25,7 +24,7 @@ namespace SoloX.TableModel.Options.Impl
     public class LocalTableStructureOptions<TData, TId> : ATableStructureOptions, ILocalTableStructureOptions<TData, TId>, ILocalTableStructureDataOptions<TData, TId>
     {
         private readonly List<IColumn<TData>> dataColumns = new List<IColumn<TData>>();
-        private readonly IPropertyNameResolver propertyNameResolver = new PropertyNameResolver();
+        private readonly PropertyNameResolver propertyNameResolver = new PropertyNameResolver();
 
         /// <summary>
         /// Get Column Id.
